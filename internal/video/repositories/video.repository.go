@@ -3,6 +3,7 @@ package repositories
 import (
 	"context"
 	"log"
+	"time"
 
 	"github.com/Video-Quality-Enhancement/VQE-Backend/internal/interfaces"
 	"github.com/Video-Quality-Enhancement/VQE-Backend/internal/video/models"
@@ -31,7 +32,10 @@ func NewVideoRepository(collection *mongo.Collection) VideoRepository {
 
 func (repository *videoRepository) Create(video *models.Video) error {
 
-	inserted, err := repository.collection.InsertOne(context.Background(), video)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	inserted, err := repository.collection.InsertOne(ctx, video)
 	if err != nil {
 		return err
 	}
@@ -43,8 +47,11 @@ func (repository *videoRepository) Create(video *models.Video) error {
 
 func (repository *videoRepository) FindByCorrelationId(correlationId string) (*models.Video, error) {
 
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
 	var video models.Video
-	err := repository.collection.FindOne(context.Background(), models.Video{CorrelationId: correlationId}).Decode(&video)
+	err := repository.collection.FindOne(ctx, models.Video{CorrelationId: correlationId}).Decode(&video)
 	if err != nil {
 		return nil, err
 	}
@@ -56,13 +63,16 @@ func (repository *videoRepository) FindByCorrelationId(correlationId string) (*m
 
 func (repository *videoRepository) FindByEmail(email string) ([]models.Video, error) {
 
-	cursor, err := repository.collection.Find(context.Background(), models.Video{Email: email})
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	cursor, err := repository.collection.Find(ctx, models.Video{Email: email})
 	if err != nil {
 		return nil, err
 	}
 
 	var videos []models.Video
-	err = cursor.All(context.Background(), &videos)
+	err = cursor.All(ctx, &videos)
 	if err != nil {
 		return nil, err
 	}
@@ -74,8 +84,11 @@ func (repository *videoRepository) FindByEmail(email string) ([]models.Video, er
 
 func (repository *videoRepository) Update(correlationId string, enhancedVideoUrl string) error {
 
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
 	_, err := repository.collection.UpdateOne(
-		context.Background(),
+		ctx,
 		models.Video{CorrelationId: correlationId},
 		bson.D{{Key: "$set", Value: models.Video{EnhancedVideoUrl: enhancedVideoUrl}}},
 	)
@@ -91,7 +104,10 @@ func (repository *videoRepository) Update(correlationId string, enhancedVideoUrl
 
 func (repository *videoRepository) Delete(correlationId string) error {
 
-	_, err := repository.collection.DeleteOne(context.Background(), models.Video{CorrelationId: correlationId})
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	_, err := repository.collection.DeleteOne(ctx, models.Video{CorrelationId: correlationId})
 	if err != nil {
 		return err
 	}
@@ -103,8 +119,11 @@ func (repository *videoRepository) Delete(correlationId string) error {
 
 func (repository *videoRepository) MakeCorrelationIdIndex() { // used in one time setup
 
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
 	indexName, err := repository.collection.Indexes().CreateOne(
-		context.Background(),
+		ctx,
 		mongo.IndexModel{
 			Keys:    bson.D{{Key: "correlationId", Value: 1}},
 			Options: options.Index().SetUnique(true),
