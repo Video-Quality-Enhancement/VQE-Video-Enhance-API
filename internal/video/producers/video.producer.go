@@ -6,41 +6,29 @@ import (
 	"log"
 	"time"
 
+	"github.com/Video-Quality-Enhancement/VQE-Backend/internal/config"
 	"github.com/Video-Quality-Enhancement/VQE-Backend/internal/video/models"
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
 type VideoProducer interface {
 	PublishVideo(*models.Video)
-	Disconnect()
 }
 
 type videoProducer struct {
-	conn *amqp.Connection
+	conn config.AMQPconnection
 }
 
 func NewVideoProducer() VideoProducer {
-
-	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
-	if err != nil {
-		log.Panicf("%s: %s", "Failed to connect to RabbitMQ", err)
-	}
-
-	return &videoProducer{conn}
-
-}
-
-func (producer *videoProducer) Disconnect() {
-	err := producer.conn.Close()
-	if err != nil {
-		log.Panicf("%s: %s", "Failed to disconnet from RabbitMQ", err)
+	return &videoProducer{
+		conn: config.NewAMQPconnection(),
 	}
 }
 
 func (producer *videoProducer) PublishVideo(video *models.Video) {
 
 	// * creating a new channel for each publish so that we can run this function in a goroutine
-	ch, err := producer.conn.Channel()
+	ch, err := producer.conn.NewChannel()
 	if err != nil {
 		log.Printf("%s: %s", "Failed to open a channel", err) // ! not sure if this is the right way to handle this
 		return
@@ -73,6 +61,7 @@ func (producer *videoProducer) PublishVideo(video *models.Video) {
 		return
 	}
 
+	// ? Should I pass the correlation id also
 	err = ch.PublishWithContext(
 		ctx,
 		"video",
