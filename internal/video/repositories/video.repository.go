@@ -5,7 +5,6 @@ import (
 	"log"
 	"time"
 
-	"github.com/Video-Quality-Enhancement/VQE-Backend/internal/interfaces"
 	"github.com/Video-Quality-Enhancement/VQE-Backend/internal/video/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -13,13 +12,12 @@ import (
 )
 
 type VideoRepository interface {
-	interfaces.Repository
 	Create(*models.Video) error
-	FindByCorrelationId(string) (*models.Video, error)
+	FindByRequestId(string) (*models.Video, error)
 	FindByEmail(email string) ([]models.Video, error)
 	Update(string, string) error
 	Delete(string) error
-	MakeCorrelationIdIndex()
+	MakeRequestIdIndex()
 }
 
 type videoRepository struct {
@@ -37,6 +35,7 @@ func (repository *videoRepository) Create(video *models.Video) error {
 
 	inserted, err := repository.collection.InsertOne(ctx, video)
 	if err != nil {
+		log.Println("Error Inserting video to database ", video)
 		return err
 	}
 
@@ -45,18 +44,19 @@ func (repository *videoRepository) Create(video *models.Video) error {
 
 }
 
-func (repository *videoRepository) FindByCorrelationId(correlationId string) (*models.Video, error) {
+func (repository *videoRepository) FindByRequestId(requestId string) (*models.Video, error) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	var video models.Video
-	err := repository.collection.FindOne(ctx, models.Video{CorrelationId: correlationId}).Decode(&video)
+	err := repository.collection.FindOne(ctx, models.Video{RequestId: requestId}).Decode(&video)
 	if err != nil {
+		log.Println("Error finding video with id: ", requestId)
 		return nil, err
 	}
 
-	log.Println("Found video with id: ", video.CorrelationId)
+	log.Println("Found video with id: ", video.RequestId)
 	return &video, nil
 
 }
@@ -68,6 +68,7 @@ func (repository *videoRepository) FindByEmail(email string) ([]models.Video, er
 
 	cursor, err := repository.collection.Find(ctx, models.Video{Email: email})
 	if err != nil {
+		log.Println("Error finding videos with email: ", email)
 		return nil, err
 	}
 
@@ -82,42 +83,44 @@ func (repository *videoRepository) FindByEmail(email string) ([]models.Video, er
 
 }
 
-func (repository *videoRepository) Update(correlationId string, enhancedVideoUrl string) error {
+func (repository *videoRepository) Update(requestId string, enhancedVideoUrl string) error {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	_, err := repository.collection.UpdateOne(
 		ctx,
-		models.Video{CorrelationId: correlationId},
+		models.Video{RequestId: requestId},
 		bson.D{{Key: "$set", Value: models.Video{EnhancedVideoUrl: enhancedVideoUrl}}},
 	)
 
 	if err != nil {
+		log.Println("Error updating video with id: ", requestId)
 		return err
 	}
 
-	log.Println("Updated video with id: ", correlationId)
+	log.Println("Updated video with id: ", requestId)
 	return nil
 
 }
 
-func (repository *videoRepository) Delete(correlationId string) error {
+func (repository *videoRepository) Delete(requestId string) error {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	_, err := repository.collection.DeleteOne(ctx, models.Video{CorrelationId: correlationId})
+	_, err := repository.collection.DeleteOne(ctx, models.Video{RequestId: requestId})
 	if err != nil {
+		log.Println("Error deleting video with id: ", requestId)
 		return err
 	}
 
-	log.Println("Deleted video with id: ", correlationId)
+	log.Println("Deleted video with id: ", requestId)
 	return nil
 
 }
 
-func (repository *videoRepository) MakeCorrelationIdIndex() { // used in one time setup
+func (repository *videoRepository) MakeRequestIdIndex() { // used in one time setup
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -125,12 +128,13 @@ func (repository *videoRepository) MakeCorrelationIdIndex() { // used in one tim
 	indexName, err := repository.collection.Indexes().CreateOne(
 		ctx,
 		mongo.IndexModel{
-			Keys:    bson.D{{Key: "correlationId", Value: 1}},
+			Keys:    bson.D{{Key: "requestId", Value: 1}},
 			Options: options.Index().SetUnique(true),
 		},
 	)
 
 	if err != nil {
+		log.Println("Error creating index with name: ", indexName)
 		panic(err)
 	}
 
