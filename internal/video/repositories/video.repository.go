@@ -11,12 +11,17 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-type VideoRepository interface {
-	Create(*models.Video) error
-	FindByRequestId(string) (*models.Video, error)
-	FindByEmail(email string) ([]models.Video, error)
+type VideoEnhanceRepository interface {
+	Create(*models.VideoEnhance) error
+	FindByRequestId(string) (*models.VideoEnhance, error)
+	FindByEmail(email string) ([]models.VideoEnhance, error)
 	Update(string, string) error
 	Delete(string) error
+	VideoEnhanceRepositorySetup
+}
+
+type VideoEnhanceRepositorySetup interface {
+	// TODO: add email index
 	MakeRequestIdIndex()
 }
 
@@ -24,11 +29,11 @@ type videoRepository struct {
 	collection *mongo.Collection
 }
 
-func NewVideoRepository(collection *mongo.Collection) VideoRepository {
+func NewVideoEnhanceRepository(collection *mongo.Collection) VideoEnhanceRepository {
 	return &videoRepository{collection}
 }
 
-func (repository *videoRepository) Create(video *models.Video) error {
+func (repository *videoRepository) Create(video *models.VideoEnhance) error {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -44,13 +49,13 @@ func (repository *videoRepository) Create(video *models.Video) error {
 
 }
 
-func (repository *videoRepository) FindByRequestId(requestId string) (*models.Video, error) {
+func (repository *videoRepository) FindByRequestId(requestId string) (*models.VideoEnhance, error) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	var video models.Video
-	err := repository.collection.FindOne(ctx, models.Video{RequestId: requestId}).Decode(&video)
+	var video models.VideoEnhance
+	err := repository.collection.FindOne(ctx, models.VideoEnhance{RequestId: requestId}).Decode(&video)
 	if err != nil {
 		log.Println("Error finding video with id: ", requestId)
 		return nil, err
@@ -61,18 +66,18 @@ func (repository *videoRepository) FindByRequestId(requestId string) (*models.Vi
 
 }
 
-func (repository *videoRepository) FindByEmail(email string) ([]models.Video, error) {
+func (repository *videoRepository) FindByEmail(email string) ([]models.VideoEnhance, error) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	cursor, err := repository.collection.Find(ctx, models.Video{Email: email})
+	cursor, err := repository.collection.Find(ctx, models.VideoEnhance{Email: email})
 	if err != nil {
 		log.Println("Error finding videos with email: ", email)
 		return nil, err
 	}
 
-	var videos []models.Video
+	var videos []models.VideoEnhance
 	err = cursor.All(ctx, &videos)
 	if err != nil {
 		return nil, err
@@ -90,8 +95,8 @@ func (repository *videoRepository) Update(requestId string, enhancedVideoUrl str
 
 	_, err := repository.collection.UpdateOne(
 		ctx,
-		models.Video{RequestId: requestId},
-		bson.D{{Key: "$set", Value: models.Video{EnhancedVideoUrl: enhancedVideoUrl}}},
+		models.VideoEnhance{RequestId: requestId},
+		bson.D{{Key: "$set", Value: models.VideoEnhance{EnhancedVideoUrl: enhancedVideoUrl}}},
 	)
 
 	if err != nil {
@@ -109,7 +114,7 @@ func (repository *videoRepository) Delete(requestId string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	_, err := repository.collection.DeleteOne(ctx, models.Video{RequestId: requestId})
+	_, err := repository.collection.DeleteOne(ctx, models.VideoEnhance{RequestId: requestId})
 	if err != nil {
 		log.Println("Error deleting video with id: ", requestId)
 		return err
