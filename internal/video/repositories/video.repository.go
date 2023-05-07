@@ -88,7 +88,7 @@ func (repository *videoRepository) FindByEmail(email string) ([]models.VideoEnha
 
 }
 
-func (repository *videoRepository) Update(requestId string, enhancedVideoUrl string) error {
+func (repository *videoRepository) Update(requestId string, EnhancedVideoUri string) error {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -96,7 +96,7 @@ func (repository *videoRepository) Update(requestId string, enhancedVideoUrl str
 	_, err := repository.collection.UpdateOne(
 		ctx,
 		models.VideoEnhance{RequestId: requestId},
-		bson.D{{Key: "$set", Value: models.VideoEnhance{EnhancedVideoUrl: enhancedVideoUrl}}},
+		bson.D{{Key: "$set", Value: models.VideoEnhance{EnhancedVideoUri: EnhancedVideoUri}}},
 	)
 
 	if err != nil {

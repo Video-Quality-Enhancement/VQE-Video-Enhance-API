@@ -87,9 +87,9 @@ func (service *videoEnhanceService) GetVideosByEmail(email string) ([]models.Vid
 
 }
 
-func (service *videoEnhanceService) OnVideoEnhancementComplete(requestId string, enhancedVideoUrl string) error {
+func (service *videoEnhanceService) OnVideoEnhancementComplete(requestId string, EnhancedVideoUri string) error {
 
-	err := service.repository.Update(requestId, enhancedVideoUrl)
+	err := service.repository.Update(requestId, EnhancedVideoUri)
 	if err != nil {
 		log.Println("Error updating video with id: ", requestId)
 		return err

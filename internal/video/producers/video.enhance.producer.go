@@ -53,7 +53,7 @@ func (producer *videoEnhanceProducer) PublishVideo(video *models.VideoEnhance) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	quality, err := utils.IdentifyQuality(video.UploadedVideoUrl)
+	quality, err := utils.IdentifyQuality(video.UploadedVideoUri)
 	if err != nil {
 		log.Printf("%s: %s", "Failed to identify quality", err)
 		return
