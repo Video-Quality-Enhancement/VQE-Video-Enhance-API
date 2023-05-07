@@ -8,24 +8,25 @@ import (
 
 	"github.com/Video-Quality-Enhancement/VQE-Backend/internal/config"
 	"github.com/Video-Quality-Enhancement/VQE-Backend/internal/video/models"
+	"github.com/Video-Quality-Enhancement/VQE-Backend/internal/video/utils"
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
-type VideoProducer interface {
-	PublishVideo(*models.Video)
+type VideoEnhanceProducer interface {
+	PublishVideo(*models.VideoEnhance)
 }
 
-type videoProducer struct {
+type videoEnhanceProducer struct {
 	conn config.AMQPconnection
 }
 
-func NewVideoProducer() VideoProducer {
-	return &videoProducer{
+func NewVideoEnhanceProducer() VideoEnhanceProducer {
+	return &videoEnhanceProducer{
 		conn: config.NewAMQPconnection(),
 	}
 }
 
-func (producer *videoProducer) PublishVideo(video *models.Video) {
+func (producer *videoEnhanceProducer) PublishVideo(video *models.VideoEnhance) {
 
 	// * creating a new channel for each publish so that we can run this function in a goroutine
 	ch, err := producer.conn.NewChannel()
@@ -36,7 +37,7 @@ func (producer *videoProducer) PublishVideo(video *models.Video) {
 	defer ch.Close()
 
 	err = ch.ExchangeDeclare(
-		"video",
+		"video.enhance",
 		"direct",
 		true,
 		false,
@@ -52,8 +53,11 @@ func (producer *videoProducer) PublishVideo(video *models.Video) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	// quality := indentifyQuality(video) // TODO: need to implement this function
-	quality := "144p"
+	quality, err := utils.IdentifyQuality(video.UploadedVideoUrl)
+	if err != nil {
+		log.Printf("%s: %s", "Failed to identify quality", err)
+		return
+	}
 
 	body, err := json.Marshal(video)
 	if err != nil {
@@ -64,7 +68,7 @@ func (producer *videoProducer) PublishVideo(video *models.Video) {
 	// ? Should I pass the correlation id also
 	err = ch.PublishWithContext(
 		ctx,
-		"video",
+		"video.enhance",
 		quality,
 		false,
 		false,
