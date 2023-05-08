@@ -15,7 +15,7 @@ type VideoEnhanceRepository interface {
 	Create(*models.VideoEnhance) error
 	FindByRequestId(string) (*models.VideoEnhance, error)
 	FindByEmail(email string) ([]models.VideoEnhance, error)
-	Update(string, string) error
+	Update(response *models.VideoEnhanceResponse) error
 	Delete(string) error
 	VideoEnhanceRepositorySetup
 }
@@ -88,23 +88,23 @@ func (repository *videoRepository) FindByEmail(email string) ([]models.VideoEnha
 
 }
 
-func (repository *videoRepository) Update(requestId string, EnhancedVideoUri string) error {
+func (repository *videoRepository) Update(response *models.VideoEnhanceResponse) error {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	_, err := repository.collection.UpdateOne(
 		ctx,
-		models.VideoEnhance{RequestId: requestId},
-		bson.D{{Key: "$set", Value: models.VideoEnhance{EnhancedVideoUri: EnhancedVideoUri}}},
+		models.VideoEnhance{RequestId: response.RequestId},
+		bson.D{{Key: "$set", Value: models.VideoEnhance{EnhancedVideoUri: response.EnhancedVideoUri}}},
 	)
 
 	if err != nil {
-		log.Println("Error updating video with id: ", requestId)
+		log.Println("Error updating video with id: ", response.RequestId)
 		return err
 	}
 
-	log.Println("Updated video with id: ", requestId)
+	log.Println("Updated video with id: ", response.RequestId)
 	return nil
 
 }
