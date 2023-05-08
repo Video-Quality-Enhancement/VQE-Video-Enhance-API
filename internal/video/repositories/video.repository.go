@@ -21,7 +21,7 @@ type VideoEnhanceRepository interface {
 }
 
 type VideoEnhanceRepositorySetup interface {
-	// TODO: add email index
+	MakeEmailIndex()
 	MakeRequestIdIndex()
 }
 
@@ -134,6 +134,28 @@ func (repository *videoRepository) MakeRequestIdIndex() { // used in one time se
 		ctx,
 		mongo.IndexModel{
 			Keys:    bson.D{{Key: "requestId", Value: 1}},
+			Options: options.Index().SetUnique(true),
+		},
+	)
+
+	if err != nil {
+		log.Println("Error creating index with name: ", indexName)
+		panic(err)
+	}
+
+	log.Println("Created index with name: ", indexName)
+
+}
+
+func (r *videoRepository) MakeEmailIndex() {
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	indexName, err := r.collection.Indexes().CreateOne(
+		ctx,
+		mongo.IndexModel{
+			Keys:    bson.D{{Key: "email", Value: 1}},
 			Options: options.Index().SetUnique(true),
 		},
 	)
