@@ -13,7 +13,7 @@ import (
 )
 
 type VideoEnhanceProducer interface {
-	PublishVideo(*models.VideoEnhance)
+	PublishVideo(*models.VideoEnhanceRequest)
 }
 
 type videoEnhanceProducer struct {
@@ -26,7 +26,7 @@ func NewVideoEnhanceProducer() VideoEnhanceProducer {
 	}
 }
 
-func (producer *videoEnhanceProducer) PublishVideo(video *models.VideoEnhance) {
+func (producer *videoEnhanceProducer) PublishVideo(request *models.VideoEnhanceRequest) {
 
 	// * creating a new channel for each publish so that we can run this function in a goroutine
 	ch, err := producer.conn.NewChannel()
@@ -53,13 +53,13 @@ func (producer *videoEnhanceProducer) PublishVideo(video *models.VideoEnhance) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	quality, err := utils.IdentifyQuality(video.UploadedVideoUri)
+	quality, err := utils.IdentifyQuality(request.UploadedVideoUri)
 	if err != nil {
 		log.Printf("%s: %s", "Failed to identify quality", err)
 		return
 	}
 
-	body, err := json.Marshal(video)
+	body, err := json.Marshal(request)
 	if err != nil {
 		log.Printf("%s: %s", "Failed to marshal video object", err)
 		return
