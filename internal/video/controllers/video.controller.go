@@ -95,7 +95,7 @@ func (controller *videoEnhanceController) GetVideosByEmail(c *gin.Context) {
 func (controller *videoEnhanceController) OnVideoEnhancementComplete(c *gin.Context) {
 
 	var response models.VideoEnhanceResponse
-	err := c.ShouldBindJSON(&response)
+	err := c.ShouldBindJSON(&response) // TODO: check if this is the correct way to bind json
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

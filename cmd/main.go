@@ -5,8 +5,10 @@ import (
 	"net/http"
 
 	"github.com/Video-Quality-Enhancement/VQE-Backend/internal/config"
+	"github.com/Video-Quality-Enhancement/VQE-Backend/internal/middlewares"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/mongo"
+	"golang.org/x/exp/slog"
 )
 
 type Env struct {
@@ -19,6 +21,7 @@ func init() {
 }
 
 func helloController(c *gin.Context) {
+	slog.Debug("omggg")
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Hello World!",
 	})
@@ -31,7 +34,14 @@ func main() {
 	database := client.ConnectToDB()
 	defer client.Disconnect()
 
-	router := gin.Default()
+	logFile := config.SlogSetupLogOutputFile()
+	defer logFile.Close()
+
+	router := gin.New()
+
+	router.Use(middlewares.SetRequestID())
+	router.Use(middlewares.JSONlogger())
+	router.Use(gin.Recovery())
 
 	env := Env{
 		database: database,
