@@ -8,7 +8,6 @@ import (
 	"github.com/Video-Quality-Enhancement/VQE-Backend/internal/middlewares"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/mongo"
-	"golang.org/x/exp/slog"
 )
 
 type Env struct {
@@ -21,7 +20,6 @@ func init() {
 }
 
 func helloController(c *gin.Context) {
-	slog.Debug("omggg")
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Hello World!",
 	})
@@ -30,12 +28,14 @@ func helloController(c *gin.Context) {
 func main() {
 
 	client := config.NewMongoClient()
-
 	database := client.ConnectToDB()
 	defer client.Disconnect()
 
-	logFile := config.SlogSetupLogOutputFile()
+	logFile := config.SetupSlogOutputFile()
 	defer logFile.Close()
+
+	gin.DefaultWriter = config.NewSlogInfoWriter()
+	gin.DefaultErrorWriter = config.NewSlogErrorWriter()
 
 	router := gin.New()
 

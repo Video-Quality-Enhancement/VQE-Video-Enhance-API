@@ -8,7 +8,7 @@ import (
 	"golang.org/x/exp/slog"
 )
 
-func SlogSetupLogOutputFile() *os.File {
+func SetupSlogOutputFile() *os.File {
 
 	date := time.Now().Format(time.DateOnly)
 	fileName := "./logs/video_service_" + date + "_log.json"
@@ -18,9 +18,31 @@ func SlogSetupLogOutputFile() *os.File {
 	}
 
 	wr := io.MultiWriter(os.Stdout, logFile)
-	logger := slog.New(slog.NewJSONHandler(wr))
+	debugHandlerOptions := slog.HandlerOptions{Level: slog.LevelDebug}
+	logger := slog.New(debugHandlerOptions.NewJSONHandler(wr))
 	slog.SetDefault(logger)
 
 	return logFile
 
+}
+
+// WriteFunc convert func to io.Writer.
+type WriteFunc func([]byte) (int, error)
+
+func (fn WriteFunc) Write(data []byte) (int, error) {
+	return fn(data)
+}
+
+func NewSlogInfoWriter() io.Writer {
+	return WriteFunc(func(data []byte) (int, error) {
+		slog.Info(string(data))
+		return 0, nil
+	})
+}
+
+func NewSlogErrorWriter() io.Writer {
+	return WriteFunc(func(data []byte) (int, error) {
+		slog.Error(string(data))
+		return 0, nil
+	})
 }
