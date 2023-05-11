@@ -1,17 +1,16 @@
 package utils
 
 import (
-	"log"
-
 	"github.com/Video-Quality-Enhancement/VQE-Backend/internal/video/types"
 	"gocv.io/x/gocv"
+	"golang.org/x/exp/slog"
 )
 
 func IdentifyQuality(videoUrl string) (string, error) {
 
 	vc, err := gocv.VideoCaptureFile(videoUrl)
 	if err != nil {
-		log.Println("Error opening video capture device: ", videoUrl)
+		slog.Error("Error opening video capture file using url", "videoUrl", videoUrl)
 		return "", err
 	}
 	defer vc.Close()
