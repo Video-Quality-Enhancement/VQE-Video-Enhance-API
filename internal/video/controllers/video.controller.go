@@ -17,14 +17,19 @@ type UserVideoEnhanceController interface {
 	EnhanceVideo(*gin.Context)
 	// GetVideo(*gin.Context)
 	// GetVideos(*gin.Context)
+	// delete video enhance request
+	// delete both the enhanced video and then uploaded video
 }
 
 type AdminVideoEnhanceController interface {
 	GetVideoByRequestId(*gin.Context)
 	GetVideosByEmail(*gin.Context)
-	OnVideoEnhancementComplete(*gin.Context)
 	DeleteVideo(*gin.Context)
+	// add video without quota to user
+	// send notification to user again
 }
+
+// developer interface
 
 type videoEnhanceController struct {
 	service services.VideoEnhanceService
