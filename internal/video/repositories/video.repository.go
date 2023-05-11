@@ -12,11 +12,11 @@ import (
 )
 
 type VideoEnhanceRepository interface {
-	Create(*models.VideoEnhance) error
-	FindByRequestId(string) (*models.VideoEnhance, error)
+	Create(video *models.VideoEnhance) error
+	FindByRequestId(requestId string) (*models.VideoEnhance, error)
 	FindByUserId(userId string) ([]models.VideoEnhance, error)
 	Update(response *models.VideoEnhanceResponse) error
-	Delete(string) error
+	Delete(requestId string) error
 	VideoEnhanceRepositorySetup
 }
 

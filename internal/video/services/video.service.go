@@ -14,9 +14,9 @@ type VideoEnhanceService interface {
 }
 
 type videoEnhanceRequestService interface { // ? should this be exported?
-	EnhanceVideo(*models.VideoEnhance) error
-	GetVideoByRequestId(string) (*models.VideoEnhance, error)
-	GetVideosByUserId(string) ([]models.VideoEnhance, error)
+	EnhanceVideo(video *models.VideoEnhance) error
+	GetVideoByRequestId(requestId string) (*models.VideoEnhance, error)
+	GetVideosByUserId(userId string) ([]models.VideoEnhance, error)
 }
 
 type VideoEnhanceResponseService interface {
@@ -24,7 +24,7 @@ type VideoEnhanceResponseService interface {
 }
 
 type VideoDeleteService interface {
-	DeleteVideo(string) error
+	DeleteVideo(requestId string) error
 }
 
 type videoEnhanceService struct {

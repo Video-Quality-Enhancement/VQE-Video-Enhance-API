@@ -13,7 +13,7 @@ import (
 )
 
 type VideoEnhanceProducer interface {
-	PublishVideo(*models.VideoEnhanceRequest)
+	PublishVideo(video *models.VideoEnhanceRequest)
 }
 
 type videoEnhanceProducer struct {

@@ -15,7 +15,7 @@ type VideoEnhanceController interface {
 }
 
 type UserVideoEnhanceController interface {
-	EnhanceVideo(*gin.Context)
+	EnhanceVideo(c *gin.Context)
 	// GetVideo(*gin.Context)
 	// GetVideos(*gin.Context)
 	// delete video enhance request
@@ -23,9 +23,9 @@ type UserVideoEnhanceController interface {
 }
 
 type AdminVideoEnhanceController interface {
-	GetVideoByRequestId(*gin.Context)
-	GetVideosByUserId(*gin.Context)
-	DeleteVideo(*gin.Context)
+	GetVideoByRequestId(c *gin.Context)
+	GetVideosByUserId(c *gin.Context)
+	DeleteVideo(c *gin.Context)
 	// add video without quota to user
 	// send notification to user again
 }

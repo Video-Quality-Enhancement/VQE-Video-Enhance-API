@@ -12,7 +12,7 @@ import (
 )
 
 type NotificationProducer interface {
-	PublishNotification(*models.VideoEnhance)
+	PublishNotification(video *models.VideoEnhance)
 }
 
 type notificationProducer struct {
