@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/Video-Quality-Enhancement/VQE-Backend/internal/config"
+	"github.com/Video-Quality-Enhancement/VQE-Backend/internal/utils"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/exp/slog"
 )
@@ -20,17 +21,17 @@ func JSONlogger() gin.HandlerFunc {
 		end := time.Now()
 		latency := end.Sub(start)
 
-		// ? check if the output of the gin should go into the log file
-		// TODO: add user id, env (development), service name
-		// TODO: add debug level logs too
 		attributes := []slog.Attr{
+			slog.String("gin-env", config.GetEnv("GIN_ENV", "development")),
+			slog.String("service-name", config.GetEnv("SERVICE_NAME", "vqe-backend")),
+			slog.String("user-id", utils.GetUserId(c)),
 			slog.Int("status", c.Writer.Status()),
 			slog.String("method", c.Request.Method),
 			slog.String("path", path),
 			slog.String("ip", c.ClientIP()),
 			slog.Duration("latency", latency),
 			slog.String("user-agent", c.Request.UserAgent()),
-			slog.String("request-id", config.GetRequestID(c)),
+			slog.String("request-id", utils.GetRequestID(c)),
 		}
 
 		switch {
