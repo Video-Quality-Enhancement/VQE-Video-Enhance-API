@@ -29,7 +29,7 @@ func (producer *notificationProducer) PublishNotification(video *models.VideoEnh
 
 	ch, err := producer.conn.NewChannel()
 	if err != nil {
-		slog.Error("%s: %s", "Failed to open a channel", err)
+		slog.Error("Failed to open a channel", "err", err)
 		return
 	}
 	defer ch.Close()
@@ -44,7 +44,7 @@ func (producer *notificationProducer) PublishNotification(video *models.VideoEnh
 		nil,
 	)
 	if err != nil {
-		slog.Error("%s: %s", "Failed to declare an exchange", err)
+		slog.Error("Failed to declare an exchange", "err", err)
 		return
 	}
 
@@ -53,7 +53,7 @@ func (producer *notificationProducer) PublishNotification(video *models.VideoEnh
 
 	body, err := json.Marshal(video)
 	if err != nil {
-		slog.Error("%s: %s", "Failed to marshal video object", err)
+		slog.Error("Failed to marshal video object", "err", err)
 		return
 	}
 
@@ -70,10 +70,10 @@ func (producer *notificationProducer) PublishNotification(video *models.VideoEnh
 		},
 	)
 	if err != nil {
-		slog.Error("%s: %s", "Failed to publish a message", err)
+		slog.Error("Failed to publish a message", "err", err)
 		return
 	}
 
-	slog.Debug("Message Published %s", body)
+	slog.Debug("Message Published", "body", body)
 
 }
