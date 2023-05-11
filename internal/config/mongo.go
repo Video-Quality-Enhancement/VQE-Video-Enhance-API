@@ -2,17 +2,17 @@ package config
 
 import (
 	"context"
-	"log"
 	"os"
 	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"golang.org/x/exp/slog"
 )
 
 type MongoClient interface {
 	ConnectToDB() *mongo.Database
-	Disconnect() error
+	Disconnect()
 }
 
 type mongoClient struct {
@@ -26,12 +26,14 @@ func NewMongoClient() MongoClient { // *  v.v.v.imp MongoClient and not *mongoCl
 
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(os.Getenv("MONGO_URI")))
 	if err != nil {
-		log.Fatal(err)
+		slog.Error("Failed to connect to MongoDB", "err", err)
+		panic(err)
 	}
 
 	err = client.Ping(ctx, nil)
 	if err != nil {
-		log.Fatal(err)
+		slog.Error("Failed to ping MongoDB", "err", err)
+		panic(err)
 	}
 
 	return &mongoClient{
@@ -45,15 +47,15 @@ func (m *mongoClient) ConnectToDB() *mongo.Database {
 
 }
 
-func (m *mongoClient) Disconnect() error {
+func (m *mongoClient) Disconnect() {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	err := m.client.Disconnect(ctx)
 	if err != nil {
-		log.Fatal(err)
+		slog.Error("Failed to disconnect from MongoDB", "err", err)
+		panic(err)
 	}
 
-	return nil
 }

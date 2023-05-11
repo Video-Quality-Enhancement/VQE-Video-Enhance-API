@@ -1,10 +1,10 @@
 package config
 
 import (
-	"log"
 	"os"
 
 	amqp "github.com/rabbitmq/amqp091-go"
+	"golang.org/x/exp/slog"
 )
 
 type AMQPconnection interface {
@@ -20,7 +20,8 @@ func NewAMQPconnection() AMQPconnection {
 
 	conn, err := amqp.Dial(os.Getenv("MONGO_URI"))
 	if err != nil {
-		log.Panicf("%s: %s", "Failed to connect to RabbitMQ", err)
+		slog.Error("Failed to connect to RabbitMQ", "err", err)
+		panic(err)
 	}
 
 	return &amqpConnection{conn}
@@ -37,7 +38,8 @@ func (a *amqpConnection) Disconnect() {
 
 	err := a.conn.Close()
 	if err != nil {
-		log.Panicf("%s: %s", "Failed to disconnet from RabbitMQ", err)
+		slog.Error("Failed to disconnet from RabbitMQ", "err", err)
+		panic(err)
 	}
 
 }

@@ -27,12 +27,12 @@ func helloController(c *gin.Context) {
 
 func main() {
 
+	logFile := config.SetupSlogOutputFile()
+	defer logFile.Close()
+
 	client := config.NewMongoClient()
 	database := client.ConnectToDB()
 	defer client.Disconnect()
-
-	logFile := config.SetupSlogOutputFile()
-	defer logFile.Close()
 
 	gin.DefaultWriter = config.NewSlogInfoWriter()
 	gin.DefaultErrorWriter = config.NewSlogErrorWriter()
