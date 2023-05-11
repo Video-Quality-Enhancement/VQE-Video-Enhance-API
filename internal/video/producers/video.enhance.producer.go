@@ -31,7 +31,7 @@ func (producer *videoEnhanceProducer) PublishVideo(request *models.VideoEnhanceR
 	// * creating a new channel for each publish so that we can run this function in a goroutine
 	ch, err := producer.conn.NewChannel()
 	if err != nil {
-		slog.Error("%s: %s", "Failed to open a channel", err) // ! not sure if this is the right way to handle this
+		slog.Error("Failed to open a channel", "err", err) // ! not sure if this is the right way to handle this
 		return
 	}
 	defer ch.Close()
@@ -46,7 +46,7 @@ func (producer *videoEnhanceProducer) PublishVideo(request *models.VideoEnhanceR
 		nil,
 	)
 	if err != nil {
-		slog.Error("%s: %s", "Failed to declare an exchange", err)
+		slog.Error("Failed to declare an exchange", "err", err)
 		return
 	}
 
@@ -55,13 +55,13 @@ func (producer *videoEnhanceProducer) PublishVideo(request *models.VideoEnhanceR
 
 	quality, err := utils.IdentifyQuality(request.UploadedVideoUri)
 	if err != nil {
-		slog.Error("%s: %s", "Failed to identify quality", err)
+		slog.Error("Failed to identify quality", "err", err)
 		return
 	}
 
 	body, err := json.Marshal(request)
 	if err != nil {
-		slog.Error("%s: %s", "Failed to marshal video object", err)
+		slog.Error("Failed to marshal video object", "err", err)
 		return
 	}
 
@@ -78,10 +78,10 @@ func (producer *videoEnhanceProducer) PublishVideo(request *models.VideoEnhanceR
 		},
 	)
 	if err != nil {
-		slog.Error("%s: %s", "Failed to publish a message", err)
+		slog.Error("Failed to publish a message", "err", err)
 		return
 	}
 
-	slog.Debug("Message Published %s", body)
+	slog.Debug("Message Published", "body", body)
 
 }
