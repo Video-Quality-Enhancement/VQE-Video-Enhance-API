@@ -40,11 +40,11 @@ func (repository *videoRepository) Create(video *models.VideoEnhance) error {
 
 	inserted, err := repository.collection.InsertOne(ctx, video)
 	if err != nil {
-		slog.Error("Error Inserting video to database ", video)
+		slog.Error("Error inserting video", "err", err)
 		return err
 	}
 
-	slog.Debug("Inserted video with id: ", inserted.InsertedID)
+	slog.Debug("Inserted video", "insertionId", inserted.InsertedID)
 	return nil
 
 }
@@ -57,11 +57,11 @@ func (repository *videoRepository) FindByRequestId(requestId string) (*models.Vi
 	var video models.VideoEnhance
 	err := repository.collection.FindOne(ctx, models.VideoEnhance{RequestId: requestId}).Decode(&video)
 	if err != nil {
-		slog.Error("Error finding video with id: ", requestId)
+		slog.Error("Error finding video", "requestId", requestId)
 		return nil, err
 	}
 
-	slog.Debug("Found video with id: ", video.RequestId)
+	slog.Debug("Found video", "requestId", video.RequestId)
 	return &video, nil
 
 }
@@ -73,7 +73,7 @@ func (repository *videoRepository) FindByEmail(email string) ([]models.VideoEnha
 
 	cursor, err := repository.collection.Find(ctx, models.VideoEnhance{Email: email})
 	if err != nil {
-		slog.Error("Error finding videos with email: ", email)
+		slog.Error("Error finding videos of user", "email", email)
 		return nil, err
 	}
 
@@ -83,7 +83,7 @@ func (repository *videoRepository) FindByEmail(email string) ([]models.VideoEnha
 		return nil, err
 	}
 
-	slog.Debug("Found videos with email: ", email)
+	slog.Debug("Found videos of user", "email", email)
 	return videos, nil
 
 }
@@ -100,11 +100,11 @@ func (repository *videoRepository) Update(response *models.VideoEnhanceResponse)
 	)
 
 	if err != nil {
-		slog.Error("Error updating video with id: ", response.RequestId)
+		slog.Error("Error updating video", "requestId", response.RequestId)
 		return err
 	}
 
-	slog.Debug("Updated video with id: ", response.RequestId)
+	slog.Debug("Updated video", "requestId", response.RequestId)
 	return nil
 
 }
@@ -116,11 +116,11 @@ func (repository *videoRepository) Delete(requestId string) error {
 
 	_, err := repository.collection.DeleteOne(ctx, models.VideoEnhance{RequestId: requestId})
 	if err != nil {
-		slog.Error("Error deleting video with id: ", requestId)
+		slog.Error("Error deleting video", "requestId", requestId)
 		return err
 	}
 
-	slog.Debug("Deleted video with id: ", requestId)
+	slog.Debug("Deleted video", "requestId", requestId)
 	return nil
 
 }
@@ -139,11 +139,11 @@ func (repository *videoRepository) MakeRequestIdIndex() { // used in one time se
 	)
 
 	if err != nil {
-		slog.Error("Error creating index with name: ", indexName)
+		slog.Error("Error creating requestId index", "indexName", indexName)
 		panic(err)
 	}
 
-	slog.Debug("Created index with name: ", indexName)
+	slog.Debug("Created requestId index", "indexName", indexName)
 
 }
 
@@ -161,10 +161,10 @@ func (r *videoRepository) MakeEmailIndex() {
 	)
 
 	if err != nil {
-		slog.Error("Error creating index with name: ", indexName)
+		slog.Error("Error creating email index", "indexName", indexName)
 		panic(err)
 	}
 
-	slog.Debug("Created index with name: ", indexName)
+	slog.Debug("Created email index", "indexName", indexName)
 
 }
