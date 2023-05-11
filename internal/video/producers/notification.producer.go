@@ -3,12 +3,12 @@ package producers
 import (
 	"context"
 	"encoding/json"
-	"log"
 	"time"
 
 	"github.com/Video-Quality-Enhancement/VQE-Backend/internal/config"
 	"github.com/Video-Quality-Enhancement/VQE-Backend/internal/video/models"
 	amqp "github.com/rabbitmq/amqp091-go"
+	"golang.org/x/exp/slog"
 )
 
 type NotificationProducer interface {
@@ -29,7 +29,7 @@ func (producer *notificationProducer) PublishNotification(video *models.VideoEnh
 
 	ch, err := producer.conn.NewChannel()
 	if err != nil {
-		log.Printf("%s: %s", "Failed to open a channel", err)
+		slog.Error("%s: %s", "Failed to open a channel", err)
 		return
 	}
 	defer ch.Close()
@@ -44,7 +44,7 @@ func (producer *notificationProducer) PublishNotification(video *models.VideoEnh
 		nil,
 	)
 	if err != nil {
-		log.Printf("%s: %s", "Failed to declare an exchange", err)
+		slog.Error("%s: %s", "Failed to declare an exchange", err)
 		return
 	}
 
@@ -53,7 +53,7 @@ func (producer *notificationProducer) PublishNotification(video *models.VideoEnh
 
 	body, err := json.Marshal(video)
 	if err != nil {
-		log.Printf("%s: %s", "Failed to marshal video object", err)
+		slog.Error("%s: %s", "Failed to marshal video object", err)
 		return
 	}
 
@@ -70,10 +70,10 @@ func (producer *notificationProducer) PublishNotification(video *models.VideoEnh
 		},
 	)
 	if err != nil {
-		log.Printf("%s: %s", "Failed to publish a message", err)
+		slog.Error("%s: %s", "Failed to publish a message", err)
 		return
 	}
 
-	log.Printf("Message Published %s", body)
+	slog.Debug("Message Published %s", body)
 
 }
