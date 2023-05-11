@@ -2,13 +2,13 @@ package repositories
 
 import (
 	"context"
-	"log"
 	"time"
 
 	"github.com/Video-Quality-Enhancement/VQE-Backend/internal/video/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"golang.org/x/exp/slog"
 )
 
 type VideoEnhanceRepository interface {
@@ -40,11 +40,11 @@ func (repository *videoRepository) Create(video *models.VideoEnhance) error {
 
 	inserted, err := repository.collection.InsertOne(ctx, video)
 	if err != nil {
-		log.Println("Error Inserting video to database ", video)
+		slog.Error("Error Inserting video to database ", video)
 		return err
 	}
 
-	log.Println("Inserted video with id: ", inserted.InsertedID)
+	slog.Debug("Inserted video with id: ", inserted.InsertedID)
 	return nil
 
 }
@@ -57,11 +57,11 @@ func (repository *videoRepository) FindByRequestId(requestId string) (*models.Vi
 	var video models.VideoEnhance
 	err := repository.collection.FindOne(ctx, models.VideoEnhance{RequestId: requestId}).Decode(&video)
 	if err != nil {
-		log.Println("Error finding video with id: ", requestId)
+		slog.Error("Error finding video with id: ", requestId)
 		return nil, err
 	}
 
-	log.Println("Found video with id: ", video.RequestId)
+	slog.Debug("Found video with id: ", video.RequestId)
 	return &video, nil
 
 }
@@ -73,7 +73,7 @@ func (repository *videoRepository) FindByEmail(email string) ([]models.VideoEnha
 
 	cursor, err := repository.collection.Find(ctx, models.VideoEnhance{Email: email})
 	if err != nil {
-		log.Println("Error finding videos with email: ", email)
+		slog.Error("Error finding videos with email: ", email)
 		return nil, err
 	}
 
@@ -83,7 +83,7 @@ func (repository *videoRepository) FindByEmail(email string) ([]models.VideoEnha
 		return nil, err
 	}
 
-	log.Println("Found videos with email: ", email)
+	slog.Debug("Found videos with email: ", email)
 	return videos, nil
 
 }
@@ -100,11 +100,11 @@ func (repository *videoRepository) Update(response *models.VideoEnhanceResponse)
 	)
 
 	if err != nil {
-		log.Println("Error updating video with id: ", response.RequestId)
+		slog.Error("Error updating video with id: ", response.RequestId)
 		return err
 	}
 
-	log.Println("Updated video with id: ", response.RequestId)
+	slog.Debug("Updated video with id: ", response.RequestId)
 	return nil
 
 }
@@ -116,11 +116,11 @@ func (repository *videoRepository) Delete(requestId string) error {
 
 	_, err := repository.collection.DeleteOne(ctx, models.VideoEnhance{RequestId: requestId})
 	if err != nil {
-		log.Println("Error deleting video with id: ", requestId)
+		slog.Error("Error deleting video with id: ", requestId)
 		return err
 	}
 
-	log.Println("Deleted video with id: ", requestId)
+	slog.Debug("Deleted video with id: ", requestId)
 	return nil
 
 }
@@ -139,11 +139,11 @@ func (repository *videoRepository) MakeRequestIdIndex() { // used in one time se
 	)
 
 	if err != nil {
-		log.Println("Error creating index with name: ", indexName)
+		slog.Error("Error creating index with name: ", indexName)
 		panic(err)
 	}
 
-	log.Println("Created index with name: ", indexName)
+	slog.Debug("Created index with name: ", indexName)
 
 }
 
@@ -161,10 +161,10 @@ func (r *videoRepository) MakeEmailIndex() {
 	)
 
 	if err != nil {
-		log.Println("Error creating index with name: ", indexName)
+		slog.Error("Error creating index with name: ", indexName)
 		panic(err)
 	}
 
-	log.Println("Created index with name: ", indexName)
+	slog.Debug("Created index with name: ", indexName)
 
 }
