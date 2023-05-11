@@ -4,7 +4,6 @@ import (
 	"github.com/Video-Quality-Enhancement/VQE-Backend/internal/video/models"
 	"github.com/Video-Quality-Enhancement/VQE-Backend/internal/video/producers"
 	"github.com/Video-Quality-Enhancement/VQE-Backend/internal/video/repositories"
-	"github.com/google/uuid"
 	"golang.org/x/exp/slog"
 )
 
@@ -46,11 +45,9 @@ func NewVideoEnhanceService(repository repositories.VideoEnhanceRepository) Vide
 
 func (service *videoEnhanceService) EnhanceVideo(video *models.VideoEnhance) error {
 
-	video.RequestId = uuid.NewString()
-
 	err := service.repository.Create(video)
 	if err != nil {
-		slog.Error("Error adding video ", video)
+		slog.Error("Error adding video to repository", "video", video)
 		return err
 	}
 
@@ -60,7 +57,7 @@ func (service *videoEnhanceService) EnhanceVideo(video *models.VideoEnhance) err
 	}
 	go service.videoEnhanceProducer.PublishVideo(request)
 
-	slog.Debug("Added Video ", video.RequestId)
+	slog.Debug("Added Video to enhance", "requestId", video.RequestId)
 	return nil
 
 }
@@ -69,11 +66,11 @@ func (service *videoEnhanceService) GetVideoByRequestId(requestId string) (*mode
 
 	video, err := service.repository.FindByRequestId(requestId)
 	if err != nil {
-		slog.Error("Error getting video with id: ", requestId)
+		slog.Error("Error getting video with requestId", "requestId", requestId)
 		return nil, err
 	}
 
-	slog.Debug("Got video with id: ", requestId)
+	slog.Debug("Got video with requestId", "requestId", requestId)
 	return video, nil
 
 }
@@ -82,11 +79,11 @@ func (service *videoEnhanceService) GetVideosByEmail(email string) ([]models.Vid
 
 	videos, err := service.repository.FindByEmail(email)
 	if err != nil {
-		slog.Error("Error getting videos of ", email)
+		slog.Error("Error getting videos of user", "email", email)
 		return nil, err
 	}
 
-	slog.Debug("Got videos of ", email)
+	slog.Debug("Got videos of user", "email", email)
 	return videos, nil
 
 }
@@ -95,19 +92,19 @@ func (service *videoEnhanceService) OnVideoEnhancementComplete(response *models.
 
 	err := service.repository.Update(response)
 	if err != nil {
-		slog.Error("Error updating video with id: ", response.RequestId)
+		slog.Error("Error updating video", "requestId", response.RequestId)
 		return err
 	}
 
 	video, err := service.GetVideoByRequestId(response.RequestId)
 	if err != nil {
-		slog.Error("Error getting video with id: ", response.RequestId)
+		slog.Error("Error getting video", "requestId", response.RequestId)
 		return err
 	}
 
 	go service.notificationProducer.PublishNotification(video)
 
-	slog.Debug("Updated video with id: ", response.RequestId)
+	slog.Debug("Updated video", "requestId", response.RequestId)
 	return nil
 
 }
