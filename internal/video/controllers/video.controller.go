@@ -3,6 +3,7 @@ package controllers
 import (
 	"net/http"
 
+	"github.com/Video-Quality-Enhancement/VQE-Backend/internal/config"
 	"github.com/Video-Quality-Enhancement/VQE-Backend/internal/video/models"
 	"github.com/Video-Quality-Enhancement/VQE-Backend/internal/video/services"
 	"github.com/gin-gonic/gin"
@@ -48,6 +49,8 @@ func (controller *videoEnhanceController) EnhanceVideo(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
+	video.RequestId = config.GetRequestID(c)
 
 	err = controller.service.EnhanceVideo(&video)
 	if err != nil {
