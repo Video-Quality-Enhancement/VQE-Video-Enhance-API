@@ -14,14 +14,14 @@ import (
 type VideoEnhanceRepository interface {
 	Create(*models.VideoEnhance) error
 	FindByRequestId(string) (*models.VideoEnhance, error)
-	FindByEmail(email string) ([]models.VideoEnhance, error)
+	FindByUserId(userId string) ([]models.VideoEnhance, error)
 	Update(response *models.VideoEnhanceResponse) error
 	Delete(string) error
 	VideoEnhanceRepositorySetup
 }
 
 type VideoEnhanceRepositorySetup interface {
-	MakeEmailIndex()
+	MakeUserIdIndex()
 	MakeRequestIdIndex()
 }
 
@@ -66,14 +66,14 @@ func (repository *videoRepository) FindByRequestId(requestId string) (*models.Vi
 
 }
 
-func (repository *videoRepository) FindByEmail(email string) ([]models.VideoEnhance, error) {
+func (repository *videoRepository) FindByUserId(userId string) ([]models.VideoEnhance, error) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	cursor, err := repository.collection.Find(ctx, models.VideoEnhance{Email: email})
+	cursor, err := repository.collection.Find(ctx, models.VideoEnhance{UserId: userId})
 	if err != nil {
-		slog.Error("Error finding videos of user", "email", email)
+		slog.Error("Error finding videos of user", "userId", userId)
 		return nil, err
 	}
 
@@ -83,7 +83,7 @@ func (repository *videoRepository) FindByEmail(email string) ([]models.VideoEnha
 		return nil, err
 	}
 
-	slog.Debug("Found videos of user", "email", email)
+	slog.Debug("Found videos of user", "userId", userId)
 	return videos, nil
 
 }
@@ -147,7 +147,7 @@ func (repository *videoRepository) MakeRequestIdIndex() { // used in one time se
 
 }
 
-func (r *videoRepository) MakeEmailIndex() {
+func (r *videoRepository) MakeUserIdIndex() {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -155,16 +155,16 @@ func (r *videoRepository) MakeEmailIndex() {
 	indexName, err := r.collection.Indexes().CreateOne(
 		ctx,
 		mongo.IndexModel{
-			Keys:    bson.D{{Key: "email", Value: 1}},
+			Keys:    bson.D{{Key: "userId", Value: 1}},
 			Options: options.Index().SetUnique(true),
 		},
 	)
 
 	if err != nil {
-		slog.Error("Error creating email index", "indexName", indexName)
+		slog.Error("Error creating userId index", "indexName", indexName)
 		panic(err)
 	}
 
-	slog.Debug("Created email index", "indexName", indexName)
+	slog.Debug("Created userId index", "indexName", indexName)
 
 }

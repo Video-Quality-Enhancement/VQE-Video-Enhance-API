@@ -16,7 +16,7 @@ type VideoEnhanceService interface {
 type videoEnhanceRequestService interface { // ? should this be exported?
 	EnhanceVideo(*models.VideoEnhance) error
 	GetVideoByRequestId(string) (*models.VideoEnhance, error)
-	GetVideosByEmail(string) ([]models.VideoEnhance, error)
+	GetVideosByUserId(string) ([]models.VideoEnhance, error)
 }
 
 type VideoEnhanceResponseService interface {
@@ -75,15 +75,15 @@ func (service *videoEnhanceService) GetVideoByRequestId(requestId string) (*mode
 
 }
 
-func (service *videoEnhanceService) GetVideosByEmail(email string) ([]models.VideoEnhance, error) {
+func (service *videoEnhanceService) GetVideosByUserId(userId string) ([]models.VideoEnhance, error) {
 
-	videos, err := service.repository.FindByEmail(email)
+	videos, err := service.repository.FindByUserId(userId)
 	if err != nil {
-		slog.Error("Error getting videos of user", "email", email)
+		slog.Error("Error getting videos of user", "userId", userId)
 		return nil, err
 	}
 
-	slog.Debug("Got videos of user", "email", email)
+	slog.Debug("Got videos of user", "userId", userId)
 	return videos, nil
 
 }

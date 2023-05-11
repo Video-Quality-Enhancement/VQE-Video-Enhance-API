@@ -24,7 +24,7 @@ type UserVideoEnhanceController interface {
 
 type AdminVideoEnhanceController interface {
 	GetVideoByRequestId(*gin.Context)
-	GetVideosByEmail(*gin.Context)
+	GetVideosByUserId(*gin.Context)
 	DeleteVideo(*gin.Context)
 	// add video without quota to user
 	// send notification to user again
@@ -81,16 +81,16 @@ func (controller *videoEnhanceController) GetVideoByRequestId(c *gin.Context) {
 
 }
 
-func (controller *videoEnhanceController) GetVideosByEmail(c *gin.Context) {
+func (controller *videoEnhanceController) GetVideosByUserId(c *gin.Context) {
 
-	var email string
-	err := c.ShouldBindJSON(&email)
+	var userId string
+	err := c.ShouldBindJSON(&userId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	videos, err := controller.service.GetVideosByEmail(email)
+	videos, err := controller.service.GetVideosByUserId(userId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

@@ -1,7 +1,7 @@
 package models
 
 type VideoEnhance struct {
-	Email            string `json:"email" bson:"email"`
+	UserId           string `json:"userId" bson:"userId"`
 	RequestId        string `json:"requestId" bson:"requestId"`
 	RequestInterface string `json:"requestInterface" bson:"requestInterface"`
 	UploadedVideoUri string `json:"UploadedVideoUri" bson:"UploadedVideoUri"`
