@@ -9,6 +9,7 @@ type VideoEnhance struct {
 }
 
 type VideoEnhanceRequest struct {
+	UserId           string `json:"userId" bson:"userId"`
 	RequestId        string `json:"requestId" bson:"requestId"`
 	UploadedVideoUri string `json:"UploadedVideoUri" bson:"UploadedVideoUri"`
 }
