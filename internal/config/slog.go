@@ -18,8 +18,7 @@ func SetupSlogOutputFile() *os.File {
 	}
 
 	wr := io.MultiWriter(os.Stdout, logFile)
-	debugHandlerOptions := slog.HandlerOptions{Level: slog.LevelDebug}
-	logger := slog.New(debugHandlerOptions.NewJSONHandler(wr))
+	logger := slog.New(slog.NewJSONHandler(wr, &slog.HandlerOptions{Level: slog.LevelDebug}))
 	slog.SetDefault(logger)
 
 	return logFile
