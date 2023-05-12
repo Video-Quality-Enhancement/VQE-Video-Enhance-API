@@ -1,7 +1,7 @@
 package helpers
 
 import (
-	"github.com/Video-Quality-Enhancement/VQE-Backend/internal/interfaces"
+	"github.com/Video-Quality-Enhancement/VQE-API-Server/internal/interfaces"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/mongo"
 )

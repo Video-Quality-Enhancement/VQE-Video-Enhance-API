@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/Video-Quality-Enhancement/VQE-Backend/internal/video/models"
+	"github.com/Video-Quality-Enhancement/VQE-API-Server/internal/video/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -15,7 +15,6 @@ type VideoEnhanceRepository interface {
 	Create(video *models.VideoEnhance) error
 	FindByRequestId(requestId string) (*models.VideoEnhance, error)
 	FindByUserId(userId string) ([]models.VideoEnhance, error)
-	Update(response *models.VideoEnhanceResponse) error
 	Delete(requestId string) error
 	VideoEnhanceRepositorySetup
 }
@@ -25,15 +24,15 @@ type VideoEnhanceRepositorySetup interface {
 	MakeRequestIdIndex()
 }
 
-type videoRepository struct {
+type videoEnhanceRepository struct {
 	collection *mongo.Collection
 }
 
 func NewVideoEnhanceRepository(collection *mongo.Collection) VideoEnhanceRepository {
-	return &videoRepository{collection}
+	return &videoEnhanceRepository{collection}
 }
 
-func (repository *videoRepository) Create(video *models.VideoEnhance) error {
+func (repository *videoEnhanceRepository) Create(video *models.VideoEnhance) error {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -49,7 +48,7 @@ func (repository *videoRepository) Create(video *models.VideoEnhance) error {
 
 }
 
-func (repository *videoRepository) FindByRequestId(requestId string) (*models.VideoEnhance, error) {
+func (repository *videoEnhanceRepository) FindByRequestId(requestId string) (*models.VideoEnhance, error) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -66,7 +65,7 @@ func (repository *videoRepository) FindByRequestId(requestId string) (*models.Vi
 
 }
 
-func (repository *videoRepository) FindByUserId(userId string) ([]models.VideoEnhance, error) {
+func (repository *videoEnhanceRepository) FindByUserId(userId string) ([]models.VideoEnhance, error) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -88,28 +87,7 @@ func (repository *videoRepository) FindByUserId(userId string) ([]models.VideoEn
 
 }
 
-func (repository *videoRepository) Update(response *models.VideoEnhanceResponse) error {
-
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-
-	_, err := repository.collection.UpdateOne(
-		ctx,
-		models.VideoEnhance{RequestId: response.RequestId},
-		bson.D{{Key: "$set", Value: models.VideoEnhance{EnhancedVideoUri: response.EnhancedVideoUri}}},
-	)
-
-	if err != nil {
-		slog.Error("Error updating video", "requestId", response.RequestId)
-		return err
-	}
-
-	slog.Debug("Updated video", "requestId", response.RequestId)
-	return nil
-
-}
-
-func (repository *videoRepository) Delete(requestId string) error {
+func (repository *videoEnhanceRepository) Delete(requestId string) error {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -125,7 +103,7 @@ func (repository *videoRepository) Delete(requestId string) error {
 
 }
 
-func (repository *videoRepository) MakeRequestIdIndex() { // used in one time setup
+func (repository *videoEnhanceRepository) MakeRequestIdIndex() { // used in one time setup
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -147,7 +125,7 @@ func (repository *videoRepository) MakeRequestIdIndex() { // used in one time se
 
 }
 
-func (r *videoRepository) MakeUserIdIndex() {
+func (r *videoEnhanceRepository) MakeUserIdIndex() {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()

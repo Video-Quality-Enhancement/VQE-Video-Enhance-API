@@ -1,4 +1,4 @@
-module github.com/Video-Quality-Enhancement/VQE-Backend
+module github.com/Video-Quality-Enhancement/VQE-API-Server
 
 go 1.20
 

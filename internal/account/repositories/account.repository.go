@@ -5,7 +5,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/Video-Quality-Enhancement/VQE-Backend/internal/account/models"
+	"github.com/Video-Quality-Enhancement/VQE-API-Server/internal/account/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"

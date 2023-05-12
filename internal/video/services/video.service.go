@@ -1,15 +1,14 @@
 package services
 
 import (
-	"github.com/Video-Quality-Enhancement/VQE-Backend/internal/video/models"
-	"github.com/Video-Quality-Enhancement/VQE-Backend/internal/video/producers"
-	"github.com/Video-Quality-Enhancement/VQE-Backend/internal/video/repositories"
+	"github.com/Video-Quality-Enhancement/VQE-API-Server/internal/video/models"
+	"github.com/Video-Quality-Enhancement/VQE-API-Server/internal/video/producers"
+	"github.com/Video-Quality-Enhancement/VQE-API-Server/internal/video/repositories"
 	"golang.org/x/exp/slog"
 )
 
 type VideoEnhanceService interface {
 	videoEnhanceRequestService
-	VideoEnhanceResponseService
 	VideoDeleteService
 }
 
@@ -19,10 +18,6 @@ type videoEnhanceRequestService interface { // ? should this be exported?
 	GetVideosByUserId(userId string) ([]models.VideoEnhance, error)
 }
 
-type VideoEnhanceResponseService interface {
-	OnVideoEnhancementComplete(response *models.VideoEnhanceResponse) error
-}
-
 type VideoDeleteService interface {
 	DeleteVideo(requestId string) error
 }
@@ -30,7 +25,6 @@ type VideoDeleteService interface {
 type videoEnhanceService struct {
 	repository           repositories.VideoEnhanceRepository
 	videoEnhanceProducer producers.VideoEnhanceProducer
-	notificationProducer producers.NotificationProducer
 }
 
 func NewVideoEnhanceService(repository repositories.VideoEnhanceRepository) VideoEnhanceService {
@@ -38,7 +32,6 @@ func NewVideoEnhanceService(repository repositories.VideoEnhanceRepository) Vide
 	return &videoEnhanceService{
 		repository:           repository,
 		videoEnhanceProducer: producers.NewVideoEnhanceProducer(),
-		notificationProducer: producers.NewNotificationProducer(),
 	}
 
 }
@@ -85,27 +78,6 @@ func (service *videoEnhanceService) GetVideosByUserId(userId string) ([]models.V
 
 	slog.Debug("Got videos of user", "userId", userId)
 	return videos, nil
-
-}
-
-func (service *videoEnhanceService) OnVideoEnhancementComplete(response *models.VideoEnhanceResponse) error {
-
-	err := service.repository.Update(response)
-	if err != nil {
-		slog.Error("Error updating video", "requestId", response.RequestId)
-		return err
-	}
-
-	video, err := service.GetVideoByRequestId(response.RequestId)
-	if err != nil {
-		slog.Error("Error getting video", "requestId", response.RequestId)
-		return err
-	}
-
-	go service.notificationProducer.PublishNotification(video)
-
-	slog.Debug("Updated video", "requestId", response.RequestId)
-	return nil
 
 }
 

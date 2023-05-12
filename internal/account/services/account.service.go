@@ -3,8 +3,8 @@ package services
 import (
 	"log"
 
-	"github.com/Video-Quality-Enhancement/VQE-Backend/internal/account/models"
-	"github.com/Video-Quality-Enhancement/VQE-Backend/internal/account/repositories"
+	"github.com/Video-Quality-Enhancement/VQE-API-Server/internal/account/models"
+	"github.com/Video-Quality-Enhancement/VQE-API-Server/internal/account/repositories"
 )
 
 type AccountService interface {

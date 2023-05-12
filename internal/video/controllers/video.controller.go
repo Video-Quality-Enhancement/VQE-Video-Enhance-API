@@ -3,9 +3,9 @@ package controllers
 import (
 	"net/http"
 
-	"github.com/Video-Quality-Enhancement/VQE-Backend/internal/utils"
-	"github.com/Video-Quality-Enhancement/VQE-Backend/internal/video/models"
-	"github.com/Video-Quality-Enhancement/VQE-Backend/internal/video/services"
+	"github.com/Video-Quality-Enhancement/VQE-API-Server/internal/utils"
+	"github.com/Video-Quality-Enhancement/VQE-API-Server/internal/video/models"
+	"github.com/Video-Quality-Enhancement/VQE-API-Server/internal/video/services"
 	"github.com/gin-gonic/gin"
 )
 
@@ -97,25 +97,6 @@ func (controller *videoEnhanceController) GetVideosByUserId(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, videos)
-
-}
-
-func (controller *videoEnhanceController) OnVideoEnhancementComplete(c *gin.Context) {
-
-	var response models.VideoEnhanceResponse
-	err := c.ShouldBindJSON(&response) // TODO: check if this is the correct way to bind json
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	err = controller.service.OnVideoEnhancementComplete(&response)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{"success": "Notification is sent to the account"})
 
 }
 
