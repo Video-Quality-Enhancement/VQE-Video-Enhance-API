@@ -83,5 +83,6 @@ func (service *videoEnhanceService) GetVideosByUserId(userId string) ([]models.V
 
 func (service *videoEnhanceService) DeleteVideo(requestId string) error {
 	// ? should this delete both the original and enhanced video?
+	// while deleting make sure that the request id belongs to the user
 	return nil
 }
