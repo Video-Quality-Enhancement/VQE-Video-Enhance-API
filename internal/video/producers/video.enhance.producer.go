@@ -13,7 +13,7 @@ import (
 )
 
 type VideoEnhanceProducer interface {
-	PublishVideo(video *models.VideoEnhanceRequest)
+	Publish(video *models.VideoEnhanceRequest)
 }
 
 type videoEnhanceProducer struct {
@@ -26,7 +26,7 @@ func NewVideoEnhanceProducer() VideoEnhanceProducer {
 	}
 }
 
-func (producer *videoEnhanceProducer) PublishVideo(request *models.VideoEnhanceRequest) {
+func (producer *videoEnhanceProducer) Publish(request *models.VideoEnhanceRequest) {
 
 	// * creating a new channel for each publish so that we can run this function in a goroutine
 	ch, err := producer.conn.NewChannel()

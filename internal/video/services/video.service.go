@@ -48,7 +48,7 @@ func (service *videoEnhanceService) EnhanceVideo(video *models.VideoEnhance) err
 		RequestId:        video.RequestId,
 		UploadedVideoUri: video.UploadedVideoUri,
 	}
-	go service.videoEnhanceProducer.PublishVideo(request)
+	go service.videoEnhanceProducer.Publish(request)
 
 	slog.Debug("Added Video to enhance", "requestId", video.RequestId)
 	return nil
