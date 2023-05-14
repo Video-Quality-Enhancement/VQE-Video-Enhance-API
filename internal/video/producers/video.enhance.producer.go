@@ -13,26 +13,26 @@ import (
 )
 
 type VideoEnhanceProducer interface {
-	Publish(video *models.VideoEnhanceRequest)
+	Publish(video *models.VideoEnhanceRequest) error
 }
 
 type videoEnhanceProducer struct {
 	conn config.AMQPconnection
 }
 
-func NewVideoEnhanceProducer() VideoEnhanceProducer {
+func NewVideoEnhanceProducer(conn config.AMQPconnection) VideoEnhanceProducer {
 	return &videoEnhanceProducer{
-		conn: config.NewAMQPconnection(),
+		conn: conn,
 	}
 }
 
-func (producer *videoEnhanceProducer) Publish(request *models.VideoEnhanceRequest) {
+func (producer *videoEnhanceProducer) Publish(request *models.VideoEnhanceRequest) error {
 
 	// * creating a new channel for each publish so that we can run this function in a goroutine
 	ch, err := producer.conn.NewChannel()
 	if err != nil {
 		slog.Error("Failed to open a channel", "err", err) // ! not sure if this is the right way to handle this
-		return
+		return err
 	}
 	defer ch.Close()
 
@@ -47,7 +47,7 @@ func (producer *videoEnhanceProducer) Publish(request *models.VideoEnhanceReques
 	)
 	if err != nil {
 		slog.Error("Failed to declare an exchange", "err", err)
-		return
+		return err
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -56,13 +56,13 @@ func (producer *videoEnhanceProducer) Publish(request *models.VideoEnhanceReques
 	quality, err := utils.IdentifyQuality(request.UploadedVideoUri)
 	if err != nil {
 		slog.Error("Failed to identify quality", "err", err)
-		return
+		return err
 	}
 
 	body, err := json.Marshal(request)
 	if err != nil {
 		slog.Error("Failed to marshal video object", "err", err)
-		return
+		return err
 	}
 
 	// ? Should I pass the correlation id also
@@ -79,9 +79,10 @@ func (producer *videoEnhanceProducer) Publish(request *models.VideoEnhanceReques
 	)
 	if err != nil {
 		slog.Error("Failed to publish a message", "err", err)
-		return
+		return err
 	}
 
 	slog.Debug("Message Published", "body", body)
+	return nil
 
 }

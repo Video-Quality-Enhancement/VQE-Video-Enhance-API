@@ -1,6 +1,7 @@
 package services
 
 import (
+	"github.com/Video-Quality-Enhancement/VQE-API-Server/internal/config"
 	"github.com/Video-Quality-Enhancement/VQE-API-Server/internal/video/models"
 	"github.com/Video-Quality-Enhancement/VQE-API-Server/internal/video/producers"
 	"github.com/Video-Quality-Enhancement/VQE-API-Server/internal/video/repositories"
@@ -27,11 +28,11 @@ type videoEnhanceService struct {
 	videoEnhanceProducer producers.VideoEnhanceProducer
 }
 
-func NewVideoEnhanceService(repository repositories.VideoEnhanceRepository) VideoEnhanceService {
+func NewVideoEnhanceService(repository repositories.VideoEnhanceRepository, conn config.AMQPconnection) VideoEnhanceService {
 
 	return &videoEnhanceService{
 		repository:           repository,
-		videoEnhanceProducer: producers.NewVideoEnhanceProducer(),
+		videoEnhanceProducer: producers.NewVideoEnhanceProducer(conn),
 	}
 
 }
@@ -48,7 +49,12 @@ func (service *videoEnhanceService) EnhanceVideo(video *models.VideoEnhance) err
 		RequestId:        video.RequestId,
 		UploadedVideoUri: video.UploadedVideoUri,
 	}
-	go service.videoEnhanceProducer.Publish(request)
+	err = service.videoEnhanceProducer.Publish(request)
+	if err != nil {
+		slog.Error("Error publishing video to enhance", "requestId", video.RequestId)
+		// TODO: delete the video from the repository
+		return err
+	}
 
 	slog.Debug("Added Video to enhance", "requestId", video.RequestId)
 	return nil
