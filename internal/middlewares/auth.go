@@ -6,7 +6,7 @@ import (
 )
 
 // TODO: jwt firebase verifyIdToken
-func VerifyToken() gin.HandlerFunc {
+func Authorization() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		utils.SetUserId(c, "1234")
 	}

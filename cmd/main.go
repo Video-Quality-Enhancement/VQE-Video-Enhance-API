@@ -39,9 +39,10 @@ func main() {
 
 	router := gin.New()
 
-	router.Use(middlewares.SetRequestID())
 	router.Use(middlewares.JSONlogger())
 	router.Use(gin.Recovery())
+	router.Use(middlewares.Authorization())
+	router.Use(middlewares.SetRequestID()) // TODO: can move the request id inside and use it only for the create video endpoint
 
 	env := Env{
 		database: database,
