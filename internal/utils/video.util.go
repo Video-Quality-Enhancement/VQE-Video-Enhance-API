@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"github.com/Video-Quality-Enhancement/VQE-API-Server/internal/video/types"
+	"github.com/Video-Quality-Enhancement/VQE-API-Server/internal/types"
 	"gocv.io/x/gocv"
 	"golang.org/x/exp/slog"
 )

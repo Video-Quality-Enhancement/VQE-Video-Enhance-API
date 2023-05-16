@@ -2,9 +2,9 @@ package services
 
 import (
 	"github.com/Video-Quality-Enhancement/VQE-API-Server/internal/config"
-	"github.com/Video-Quality-Enhancement/VQE-API-Server/internal/video/models"
-	"github.com/Video-Quality-Enhancement/VQE-API-Server/internal/video/producers"
-	"github.com/Video-Quality-Enhancement/VQE-API-Server/internal/video/repositories"
+	"github.com/Video-Quality-Enhancement/VQE-API-Server/internal/models"
+	"github.com/Video-Quality-Enhancement/VQE-API-Server/internal/producers"
+	"github.com/Video-Quality-Enhancement/VQE-API-Server/internal/repositories"
 	"golang.org/x/exp/slog"
 )
 

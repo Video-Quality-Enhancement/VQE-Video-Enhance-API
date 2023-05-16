@@ -3,9 +3,9 @@ package controllers
 import (
 	"net/http"
 
+	"github.com/Video-Quality-Enhancement/VQE-API-Server/internal/models"
+	"github.com/Video-Quality-Enhancement/VQE-API-Server/internal/services"
 	"github.com/Video-Quality-Enhancement/VQE-API-Server/internal/utils"
-	"github.com/Video-Quality-Enhancement/VQE-API-Server/internal/video/models"
-	"github.com/Video-Quality-Enhancement/VQE-API-Server/internal/video/services"
 	"github.com/gin-gonic/gin"
 )
 

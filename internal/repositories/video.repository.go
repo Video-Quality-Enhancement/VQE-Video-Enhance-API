@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/Video-Quality-Enhancement/VQE-API-Server/internal/video/models"
+	"github.com/Video-Quality-Enhancement/VQE-API-Server/internal/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
