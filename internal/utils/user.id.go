@@ -5,7 +5,6 @@ import (
 	"golang.org/x/exp/slog"
 )
 
-// TODO: move this to middleware and add this after Auth middleware
 func SetUserId(c *gin.Context, userId string) {
 
 	if userId == "" {
