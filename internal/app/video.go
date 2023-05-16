@@ -1,4 +1,4 @@
-package video
+package app
 
 // set up user
 // set up admin
