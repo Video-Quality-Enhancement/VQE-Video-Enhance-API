@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/Video-Quality-Enhancement/VQE-API-Server/internal/config"
-	"github.com/Video-Quality-Enhancement/VQE-API-Server/internal/utils"
+	"github.com/Video-Quality-Enhancement/VQE-User-Video-API/internal/config"
+	"github.com/Video-Quality-Enhancement/VQE-User-Video-API/internal/utils"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/exp/slog"
 )

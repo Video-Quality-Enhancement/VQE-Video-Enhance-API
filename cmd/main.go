@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/Video-Quality-Enhancement/VQE-API-Server/internal/config"
-	"github.com/Video-Quality-Enhancement/VQE-API-Server/internal/middlewares"
+	"github.com/Video-Quality-Enhancement/VQE-User-Video-API/internal/config"
+	"github.com/Video-Quality-Enhancement/VQE-User-Video-API/internal/middlewares"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/mongo"
 )

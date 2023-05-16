@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"github.com/Video-Quality-Enhancement/VQE-API-Server/internal/controllers"
+	"github.com/Video-Quality-Enhancement/VQE-User-Video-API/internal/controllers"
 	"github.com/gin-gonic/gin"
 )
 
