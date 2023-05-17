@@ -10,7 +10,9 @@ func SetUpApp(router *gin.Engine, database *mongo.Database, conn config.AMQPconn
 
 	collection := database.Collection("VIDEO_COLLECTION")
 	userVideoRouter := router.Group("/api/user/videos")
-	ch := conn.NewChannel() // Reuse the same channel per thread for publishing. Don't open a channel each time you are publishing.
+	// Reuse the same channel per thread for publishing.
+	// Don't open a channel each time you are publishing.
+	ch := conn.NewChannel()
 	SetUpUserVideo(userVideoRouter, collection, ch)
 
 }
