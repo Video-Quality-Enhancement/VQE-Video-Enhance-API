@@ -9,18 +9,10 @@ import (
 )
 
 type VideoEnhanceService interface {
-	videoEnhanceRequestService
-	VideoDeleteService
-}
-
-type videoEnhanceRequestService interface { // ? should this be exported?
 	EnhanceVideo(video *models.VideoEnhance) error
-	GetVideoByRequestId(requestId string) (*models.VideoEnhance, error)
+	GetVideoByRequestId(userId, requestId string) (*models.VideoEnhance, error)
 	GetVideosByUserId(userId string) ([]models.VideoEnhance, error)
-}
-
-type VideoDeleteService interface {
-	DeleteVideo(requestId string) error
+	DeleteVideo(userId, requestId string) error
 }
 
 type videoEnhanceService struct {
@@ -61,9 +53,9 @@ func (service *videoEnhanceService) EnhanceVideo(video *models.VideoEnhance) err
 
 }
 
-func (service *videoEnhanceService) GetVideoByRequestId(requestId string) (*models.VideoEnhance, error) {
+func (service *videoEnhanceService) GetVideoByRequestId(userId, requestId string) (*models.VideoEnhance, error) {
 
-	video, err := service.repository.FindByRequestId(requestId)
+	video, err := service.repository.FindByRequestId(userId, requestId)
 	if err != nil {
 		slog.Error("Error getting video with requestId", "requestId", requestId)
 		return nil, err
@@ -76,7 +68,7 @@ func (service *videoEnhanceService) GetVideoByRequestId(requestId string) (*mode
 
 func (service *videoEnhanceService) GetVideosByUserId(userId string) ([]models.VideoEnhance, error) {
 
-	videos, err := service.repository.FindByUserId(userId)
+	videos, err := service.repository.FindAllByUserId(userId)
 	if err != nil {
 		slog.Error("Error getting videos of user", "userId", userId)
 		return nil, err
@@ -87,8 +79,17 @@ func (service *videoEnhanceService) GetVideosByUserId(userId string) ([]models.V
 
 }
 
-func (service *videoEnhanceService) DeleteVideo(requestId string) error {
-	// ? should this delete both the original and enhanced video?
-	// while deleting make sure that the request id belongs to the user
+func (service *videoEnhanceService) DeleteVideo(userId, requestId string) error {
+
+	// TODO: call delete video producer
+
+	err := service.repository.Delete(userId, requestId)
+	if err != nil {
+		slog.Error("Error deleting video", "requestId", requestId)
+		return err
+	}
+
+	slog.Debug("Deleted video", "requestId", requestId)
+
 	return nil
 }
