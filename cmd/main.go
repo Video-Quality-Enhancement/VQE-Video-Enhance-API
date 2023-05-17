@@ -21,12 +21,14 @@ func main() {
 	database := client.ConnectToDB()
 	defer client.Disconnect()
 
+	// Try to keep the connection/channel count low. Use separate connections to publish and consume.
+	// Ideally, you should have one connection per process, and then use one channel per thread in your application.
 	ampq := config.NewAMQPconnection()
-	defer ampq.Disconnect()
+	defer ampq.DisconnectAll()
 
 	router := gin.New()
 
-	app.SetUpUserVideo(router, database, ampq)
+	app.SetUpApp(router, database, ampq)
 
 	router.Run()
 
