@@ -31,7 +31,6 @@ func JSONlogger() gin.HandlerFunc {
 			slog.String("ip", c.ClientIP()),
 			slog.Duration("latency", latency),
 			slog.String("user-agent", c.Request.UserAgent()),
-			slog.String("request-id", utils.GetRequestID(c)),
 		}
 
 		switch {
