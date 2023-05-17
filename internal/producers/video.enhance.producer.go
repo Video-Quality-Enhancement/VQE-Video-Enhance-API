@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/Video-Quality-Enhancement/VQE-User-Video-API/internal/config"
 	"github.com/Video-Quality-Enhancement/VQE-User-Video-API/internal/models"
 	"github.com/Video-Quality-Enhancement/VQE-User-Video-API/internal/utils"
 	amqp "github.com/rabbitmq/amqp091-go"
@@ -17,26 +16,16 @@ type VideoEnhanceProducer interface {
 }
 
 type videoEnhanceProducer struct {
-	conn config.AMQPconnection
+	ch *amqp.Channel
 }
 
-func NewVideoEnhanceProducer(conn config.AMQPconnection) VideoEnhanceProducer {
-	return &videoEnhanceProducer{
-		conn: conn,
-	}
+func NewVideoEnhanceProducer(ch *amqp.Channel) VideoEnhanceProducer {
+	return &videoEnhanceProducer{ch}
 }
 
 func (producer *videoEnhanceProducer) Publish(request *models.VideoEnhanceRequest) error {
 
-	// * creating a new channel for each publish so that we can run this function in a goroutine
-	ch, err := producer.conn.NewChannel()
-	if err != nil {
-		slog.Error("Failed to open a channel", "err", err) // ! not sure if this is the right way to handle this
-		return err
-	}
-	defer ch.Close()
-
-	err = ch.ExchangeDeclare(
+	err := producer.ch.ExchangeDeclare(
 		"video.enhance",
 		"direct",
 		true,
@@ -66,7 +55,7 @@ func (producer *videoEnhanceProducer) Publish(request *models.VideoEnhanceReques
 	}
 
 	// ? Should I pass the correlation id also
-	err = ch.PublishWithContext(
+	err = producer.ch.PublishWithContext(
 		ctx,
 		"video.enhance",
 		quality,
