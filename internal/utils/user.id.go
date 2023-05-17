@@ -1,28 +1,32 @@
 package utils
 
 import (
+	"errors"
+
 	"github.com/gin-gonic/gin"
 	"golang.org/x/exp/slog"
 )
 
-func SetUserId(c *gin.Context, userId string) {
+func SetUserId(c *gin.Context, userId string) error {
 
 	if userId == "" {
-		slog.Warn("User ID missing, cannot set userId")
-	} else {
-		c.Set("X-User-ID", userId)
+		slog.Error("User ID missing, cannot set userId")
+		return errors.New("User ID missing, cannot set userId")
 	}
+
+	c.Set("X-User-ID", userId)
+	return nil
 
 }
 
-func GetUserId(c *gin.Context) string {
+func GetUserId(c *gin.Context) (string, error) {
 
 	userId := c.GetString("X-User-ID")
 
 	if userId == "" {
 		slog.Warn("User ID missing, cannot get userId")
-		return ""
+		return "", errors.New("User ID missing, cannot get userId")
 	}
 
-	return userId
+	return userId, nil
 }
