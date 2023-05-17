@@ -13,9 +13,9 @@ import (
 
 type VideoEnhanceRepository interface {
 	Create(video *models.VideoEnhance) error
-	FindByRequestId(requestId string) (*models.VideoEnhance, error)
-	FindByUserId(userId string) ([]models.VideoEnhance, error)
-	Delete(requestId string) error
+	FindByRequestId(userId, requestId string) (*models.VideoEnhance, error)
+	FindAllByUserId(userId string) ([]models.VideoEnhance, error)
+	Delete(userId, requestId string) error
 	VideoEnhanceRepositorySetup
 }
 
@@ -48,13 +48,20 @@ func (repository *videoEnhanceRepository) Create(video *models.VideoEnhance) err
 
 }
 
-func (repository *videoEnhanceRepository) FindByRequestId(requestId string) (*models.VideoEnhance, error) {
+func (repository *videoEnhanceRepository) FindByRequestId(userId, requestId string) (*models.VideoEnhance, error) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	var video models.VideoEnhance
-	err := repository.collection.FindOne(ctx, models.VideoEnhance{RequestId: requestId}).Decode(&video)
+	err := repository.collection.FindOne(
+		ctx,
+		models.VideoEnhance{
+			UserId:    userId,
+			RequestId: requestId,
+		}).Decode(&video)
+	// * added userId along with requestId coz only that user should be able to the video with that particular requestId
+
 	if err != nil {
 		slog.Error("Error finding video", "requestId", requestId)
 		return nil, err
@@ -65,7 +72,7 @@ func (repository *videoEnhanceRepository) FindByRequestId(requestId string) (*mo
 
 }
 
-func (repository *videoEnhanceRepository) FindByUserId(userId string) ([]models.VideoEnhance, error) {
+func (repository *videoEnhanceRepository) FindAllByUserId(userId string) ([]models.VideoEnhance, error) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -87,12 +94,18 @@ func (repository *videoEnhanceRepository) FindByUserId(userId string) ([]models.
 
 }
 
-func (repository *videoEnhanceRepository) Delete(requestId string) error {
+func (repository *videoEnhanceRepository) Delete(userId, requestId string) error {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	_, err := repository.collection.DeleteOne(ctx, models.VideoEnhance{RequestId: requestId})
+	_, err := repository.collection.DeleteOne(
+		ctx,
+		models.VideoEnhance{
+			UserId:    userId,
+			RequestId: requestId,
+		})
+
 	if err != nil {
 		slog.Error("Error deleting video", "requestId", requestId)
 		return err
