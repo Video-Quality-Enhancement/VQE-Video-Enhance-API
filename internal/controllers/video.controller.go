@@ -10,17 +10,10 @@ import (
 )
 
 type VideoEnhanceController interface {
-	UserVideoEnhanceController
-	// AdminVideoEnhanceController
-}
-
-type UserVideoEnhanceController interface {
 	EnhanceVideo(c *gin.Context)
 	GetVideo(*gin.Context)
 	GetVideos(*gin.Context)
 	DeleteVideo(*gin.Context)
-	// delete video enhance request
-	// delete both the enhanced video and then uploaded video
 }
 
 // type AdminVideoEnhanceController interface {
@@ -30,8 +23,6 @@ type UserVideoEnhanceController interface {
 // 	// add video without quota to user
 // 	// send notification to user again
 // }
-
-// developer interface
 
 type videoEnhanceController struct {
 	service services.VideoEnhanceService

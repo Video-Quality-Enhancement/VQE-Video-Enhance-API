@@ -44,7 +44,7 @@ func (service *videoEnhanceService) EnhanceVideo(video *models.VideoEnhance) err
 	err = service.videoEnhanceProducer.Publish(request)
 	if err != nil {
 		slog.Error("Error publishing video to enhance", "requestId", video.RequestId)
-		// TODO: delete the video from the repository
+		service.repository.Delete(video.UserId, video.RequestId) // * important to delete video from repository if it was not published to enhance
 		return err
 	}
 
