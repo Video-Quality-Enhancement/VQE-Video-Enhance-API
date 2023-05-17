@@ -4,15 +4,17 @@ type ResponseInterface string
 
 const (
 	UI              ResponseInterface = "ui"
-	API             ResponseInterface = "api"
 	ChromeExtension ResponseInterface = "chromeExtension"
 	Whatsapp        ResponseInterface = "whatsapp"
 	Discord         ResponseInterface = "discord"
-	ClientLibrary   ResponseInterface = "clientLibrary"
 )
 
 func (r ResponseInterface) String() string {
 	return string(r)
+}
+
+func GetResponseInterfaces() [4]ResponseInterface {
+	return [...]ResponseInterface{UI, ChromeExtension, Whatsapp, Discord}
 }
 
 type VideoQuality string
@@ -27,4 +29,8 @@ const (
 
 func (v VideoQuality) String() string {
 	return string(v)
+}
+
+func GetVideoQualities() [5]VideoQuality {
+	return [...]VideoQuality{Q144p, Q240p, Q360p, Q480p, Q720p}
 }
