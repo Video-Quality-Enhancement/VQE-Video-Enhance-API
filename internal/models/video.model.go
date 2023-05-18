@@ -5,7 +5,6 @@ type VideoEnhance struct {
 	RequestId          string   `json:"requestId" bson:"requestId"`
 	ResponseInterfaces []string `json:"responseInterfaces" bson:"responseInterfaces"`
 	UploadedVideoUri   string   `json:"UploadedVideoUri" bson:"UploadedVideoUri"`
-	EnhancedVideoUri   string   `json:"EnhancedVideoUri,omitempty" bson:"EnhancedVideoUri,omitempty"`
 }
 
 type VideoEnhanceRequest struct {
