@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/Video-Quality-Enhancement/VQE-User-Video-API/internal/app"
 	"github.com/Video-Quality-Enhancement/VQE-User-Video-API/internal/config"
+	"github.com/Video-Quality-Enhancement/VQE-User-Video-API/internal/middlewares"
 	"github.com/gin-gonic/gin"
 )
 
@@ -27,6 +28,8 @@ func main() {
 	defer ampq.DisconnectAll()
 
 	router := gin.New()
+	router.Use(middlewares.JSONlogger())
+	router.Use(gin.Recovery())
 
 	app.SetUpApp(router, database, ampq)
 

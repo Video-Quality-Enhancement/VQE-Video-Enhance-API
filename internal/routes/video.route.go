@@ -16,10 +16,7 @@ func testController(c *gin.Context) {
 
 func RegisterUserVideoRoutes(router *gin.RouterGroup, controller controllers.VideoEnhanceController) {
 
-	router.Use(middlewares.JSONlogger())
-	router.Use(gin.Recovery())
 	router.Use(middlewares.Authorization())
-
 	router.GET("/test", testController)
 	router.POST("/enhance", middlewares.SetRequestID(), controller.EnhanceVideo)
 	router.GET("/:id", controller.GetVideo)
