@@ -38,6 +38,7 @@ func (service *videoEnhanceService) EnhanceVideo(video *models.VideoEnhance) err
 	}
 
 	request := &models.VideoEnhanceRequest{
+		UserId:           video.UserId,
 		RequestId:        video.RequestId,
 		UploadedVideoUrl: video.UploadedVideoUrl,
 	}
