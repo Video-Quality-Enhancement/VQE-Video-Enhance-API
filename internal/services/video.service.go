@@ -39,7 +39,7 @@ func (service *videoEnhanceService) EnhanceVideo(video *models.VideoEnhance) err
 
 	request := &models.VideoEnhanceRequest{
 		RequestId:        video.RequestId,
-		UploadedVideoUri: video.UploadedVideoUri,
+		UploadedVideoUrl: video.UploadedVideoUrl,
 	}
 	err = service.videoEnhanceProducer.Publish(request)
 	if err != nil {
