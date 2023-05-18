@@ -24,7 +24,7 @@ func GetUserId(c *gin.Context) (string, error) {
 	userId := c.GetString("X-User-ID")
 
 	if userId == "" {
-		slog.Warn("User ID missing, cannot get userId")
+		slog.Error("User ID missing, cannot get userId")
 		return "", errors.New("User ID missing, cannot get userId")
 	}
 
