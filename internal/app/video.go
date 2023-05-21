@@ -5,6 +5,7 @@ import (
 	"github.com/Video-Quality-Enhancement/VQE-User-Video-API/internal/repositories"
 	"github.com/Video-Quality-Enhancement/VQE-User-Video-API/internal/routes"
 	"github.com/Video-Quality-Enhancement/VQE-User-Video-API/internal/services"
+	"github.com/Video-Quality-Enhancement/VQE-User-Video-API/internal/validations"
 	"github.com/gin-gonic/gin"
 	amqp "github.com/rabbitmq/amqp091-go"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -19,6 +20,7 @@ func SetUpUserVideo(router *gin.RouterGroup, collection *mongo.Collection, ch *a
 	repository := repositories.NewVideoEnhanceRepository(collection)
 	service := services.NewVideoEnhanceService(repository, ch)
 	controller := controllers.NewVideoEnhanceController(service)
+	validations.RegisterVideoValidations()
 	routes.RegisterUserVideoRoutes(router, controller)
 
 }
