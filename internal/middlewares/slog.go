@@ -3,9 +3,9 @@ package middlewares
 import (
 	"context"
 	"net/http"
+	"os"
 	"time"
 
-	"github.com/Video-Quality-Enhancement/VQE-User-Video-API/internal/config"
 	"github.com/Video-Quality-Enhancement/VQE-User-Video-API/internal/utils"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/exp/slog"
@@ -24,8 +24,8 @@ func JSONlogger() gin.HandlerFunc {
 		userId, _ := utils.GetUserId(c)
 
 		attributes := []slog.Attr{
-			slog.String("gin-env", config.GetEnv("GIN_ENV", "development")),
-			slog.String("service-name", config.GetEnv("SERVICE_NAME", "vqe-backend")),
+			slog.String("gin-env", os.Getenv("GIN_ENV")),
+			slog.String("service-name", os.Getenv("SERVICE_NAME")),
 			slog.Int("status", c.Writer.Status()),
 			slog.String("method", c.Request.Method),
 			slog.String("path", path),
