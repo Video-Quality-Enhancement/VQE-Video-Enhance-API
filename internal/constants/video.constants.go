@@ -3,10 +3,10 @@ package constants
 type ResponseInterface string
 
 const (
-	UI              ResponseInterface = "ui"
-	ChromeExtension ResponseInterface = "chromeExtension"
-	Whatsapp        ResponseInterface = "whatsapp"
-	Discord         ResponseInterface = "discord"
+	Email    ResponseInterface = "email"
+	UI       ResponseInterface = "ui"
+	Whatsapp ResponseInterface = "whatsapp"
+	Discord  ResponseInterface = "discord"
 )
 
 func (r ResponseInterface) String() string {
@@ -14,7 +14,16 @@ func (r ResponseInterface) String() string {
 }
 
 func GetResponseInterfaces() [4]ResponseInterface {
-	return [...]ResponseInterface{UI, ChromeExtension, Whatsapp, Discord}
+	return [...]ResponseInterface{Email, UI, Whatsapp, Discord}
+}
+
+func GetResponseInterfaceSet() map[ResponseInterface]struct{} {
+	responseInterfaces := GetResponseInterfaces()
+	responseInterfacesSet := make(map[ResponseInterface]struct{})
+	for _, responseInterface := range responseInterfaces {
+		responseInterfacesSet[responseInterface] = struct{}{}
+	}
+	return responseInterfacesSet
 }
 
 type VideoQuality string
@@ -33,4 +42,13 @@ func (v VideoQuality) String() string {
 
 func GetVideoQualities() [5]VideoQuality {
 	return [...]VideoQuality{Q144p, Q240p, Q360p, Q480p, Q720p}
+}
+
+func GetVideoQualitySet() map[VideoQuality]struct{} {
+	videoQualities := GetVideoQualities()
+	videoQualitySet := make(map[VideoQuality]struct{})
+	for _, videoQuality := range videoQualities {
+		videoQualitySet[videoQuality] = struct{}{}
+	}
+	return videoQualitySet
 }
