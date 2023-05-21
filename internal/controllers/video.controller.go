@@ -42,6 +42,12 @@ func (controller *videoEnhanceController) EnhanceVideo(c *gin.Context) {
 		return
 	}
 
+	video.UserId, err = utils.GetUserId(c)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
 	video.RequestId, err = utils.GetRequestID(c)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
