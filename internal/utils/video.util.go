@@ -8,7 +8,7 @@ import (
 
 func IdentifyQuality(videoUrl string) (string, error) {
 
-	vc, err := gocv.VideoCaptureFile(videoUrl)
+	vc, err := gocv.OpenVideoCapture(videoUrl)
 	if err != nil {
 		slog.Error("Error opening video capture file using url", "videoUrl", videoUrl)
 		return "", err
