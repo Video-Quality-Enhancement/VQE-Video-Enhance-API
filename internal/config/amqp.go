@@ -19,7 +19,7 @@ type amqpConnection struct {
 
 func NewAMQPconnection() AMQPconnection {
 
-	conn, err := amqp.Dial(os.Getenv("MONGO_URI"))
+	conn, err := amqp.Dial(os.Getenv("AMQP_URL"))
 	if err != nil {
 		slog.Error("Failed to connect to RabbitMQ", "err", err)
 		panic(err)
