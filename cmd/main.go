@@ -24,14 +24,14 @@ func main() {
 
 	// Try to keep the connection/channel count low. Use separate connections to publish and consume.
 	// Ideally, you should have one connection per process, and then use one channel per thread in your application.
-	ampq := config.NewAMQPconnection()
-	defer ampq.DisconnectAll()
+	conn := config.NewAMQPconnection()
+	defer conn.DisconnectAll()
 
 	router := gin.New()
 	router.Use(middlewares.JSONlogger())
 	router.Use(gin.Recovery())
 
-	app.SetUpApp(router, database, ampq)
+	app.SetUpApp(router, database, conn)
 
 	router.Run()
 
