@@ -20,7 +20,7 @@ type VideoEnhanceRepository interface {
 
 type VideoEnhanceRepositorySetup interface {
 	MakeUserIdIndex()
-	MakeRequestIdIndex()
+	MakeRequestIdUniqueIndex()
 }
 
 type videoEnhanceRepository struct {
@@ -56,13 +56,10 @@ func (repository *videoEnhanceRepository) FindByRequestId(userId, requestId stri
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
+	filter := bson.D{{Key: "requestId", Value: requestId}, {Key: "userId", Value: userId}}
+
 	var video models.VideoEnhance
-	err := repository.collection.FindOne(
-		ctx,
-		models.VideoEnhance{
-			UserId:    userId,
-			RequestId: requestId,
-		}).Decode(&video)
+	err := repository.collection.FindOne(ctx, filter).Decode(&video)
 	// * added userId along with requestId coz only that user should be able to the video with that particular requestId
 
 	if err != nil {
@@ -80,7 +77,9 @@ func (repository *videoEnhanceRepository) FindAllByUserId(userId string) ([]mode
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	cursor, err := repository.collection.Find(ctx, models.VideoEnhance{UserId: userId})
+	filter := bson.D{{Key: "userId", Value: userId}}
+
+	cursor, err := repository.collection.Find(ctx, filter)
 	if err != nil {
 		slog.Error("Error finding videos of user", "userId", userId)
 		return nil, err
@@ -102,24 +101,21 @@ func (repository *videoEnhanceRepository) Delete(userId, requestId string) error
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	_, err := repository.collection.DeleteOne(
-		ctx,
-		models.VideoEnhance{
-			UserId:    userId,
-			RequestId: requestId,
-		})
+	filter := bson.D{{Key: "requestId", Value: requestId}, {Key: "userId", Value: userId}}
+
+	deleteResult, err := repository.collection.DeleteOne(ctx, filter)
 
 	if err != nil {
-		slog.Error("Error deleting video", "requestId", requestId)
+		slog.Error("Error deleting video", "requestId", requestId, "err", err)
 		return err
 	}
 
-	slog.Debug("Deleted video", "requestId", requestId)
+	slog.Debug("Deleted video", "requestId", requestId, "deleteCount", deleteResult.DeletedCount)
 	return nil
 
 }
 
-func (repository *videoEnhanceRepository) MakeRequestIdIndex() { // used in one time setup
+func (repository *videoEnhanceRepository) MakeRequestIdUniqueIndex() { // used in one time setup
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -150,7 +146,7 @@ func (r *videoEnhanceRepository) MakeUserIdIndex() {
 		ctx,
 		mongo.IndexModel{
 			Keys:    bson.D{{Key: "userId", Value: 1}},
-			Options: options.Index().SetUnique(true),
+			Options: options.Index(),
 		},
 	)
 

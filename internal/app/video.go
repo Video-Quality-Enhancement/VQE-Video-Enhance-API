@@ -29,6 +29,6 @@ func SetUpUserVideoRepositoryIndexes(collection *mongo.Collection) {
 
 	repository := repositories.NewVideoEnhanceRepositorySetup(collection)
 	repository.MakeUserIdIndex()
-	repository.MakeRequestIdIndex()
+	repository.MakeRequestIdUniqueIndex()
 
 }
