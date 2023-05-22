@@ -74,7 +74,7 @@ func (controller *videoEnhanceController) GetVideo(c *gin.Context) {
 
 	var requestId = c.Param("requestId")
 	if requestId == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "requestId is required"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "wrong requestID"})
 		return
 	}
 
