@@ -25,8 +25,9 @@ func NewVideoEnhanceProducer(ch *amqp.Channel) VideoEnhanceProducer {
 
 func (producer *videoEnhanceProducer) Publish(request *models.VideoEnhanceRequest) error {
 
+	exchange := "video.enhance"
 	err := producer.ch.ExchangeDeclare(
-		"video.enhance",
+		exchange,
 		"direct",
 		true,
 		false,
@@ -54,10 +55,9 @@ func (producer *videoEnhanceProducer) Publish(request *models.VideoEnhanceReques
 		return err
 	}
 
-	// ? Should I pass the correlation id also
 	err = producer.ch.PublishWithContext(
 		ctx,
-		"video.enhance",
+		exchange,
 		quality,
 		false,
 		false,
