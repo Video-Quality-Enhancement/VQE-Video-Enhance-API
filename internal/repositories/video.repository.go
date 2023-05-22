@@ -16,7 +16,6 @@ type VideoEnhanceRepository interface {
 	FindByRequestId(userId, requestId string) (*models.VideoEnhance, error)
 	FindAllByUserId(userId string) ([]models.VideoEnhance, error)
 	Delete(userId, requestId string) error
-	VideoEnhanceRepositorySetup
 }
 
 type VideoEnhanceRepositorySetup interface {
@@ -29,6 +28,10 @@ type videoEnhanceRepository struct {
 }
 
 func NewVideoEnhanceRepository(collection *mongo.Collection) VideoEnhanceRepository {
+	return &videoEnhanceRepository{collection}
+}
+
+func NewVideoEnhanceRepositorySetup(collection *mongo.Collection) VideoEnhanceRepositorySetup {
 	return &videoEnhanceRepository{collection}
 }
 

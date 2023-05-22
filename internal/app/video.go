@@ -24,3 +24,11 @@ func SetUpUserVideo(router *gin.RouterGroup, collection *mongo.Collection, ch *a
 	routes.RegisterUserVideoRoutes(router, controller)
 
 }
+
+func SetUpUserVideoRepositoryIndexes(collection *mongo.Collection) {
+
+	repository := repositories.NewVideoEnhanceRepositorySetup(collection)
+	repository.MakeUserIdIndex()
+	repository.MakeRequestIdIndex()
+
+}

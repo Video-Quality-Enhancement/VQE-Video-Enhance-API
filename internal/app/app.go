@@ -16,3 +16,10 @@ func SetUpApp(router *gin.Engine, database *mongo.Database, conn config.AMQPconn
 	SetUpUserVideo(userVideoRouter, collection, ch)
 
 }
+
+func SetUpRepositoryIndexes(database *mongo.Database) {
+
+	collection := database.Collection("VIDEO_COLLECTION")
+	SetUpUserVideoRepositoryIndexes(collection)
+
+}
