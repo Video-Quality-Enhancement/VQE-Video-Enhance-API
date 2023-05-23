@@ -2,6 +2,7 @@ package app
 
 import (
 	"github.com/Video-Quality-Enhancement/VQE-User-Video-API/internal/controllers"
+	"github.com/Video-Quality-Enhancement/VQE-User-Video-API/internal/producers"
 	"github.com/Video-Quality-Enhancement/VQE-User-Video-API/internal/repositories"
 	"github.com/Video-Quality-Enhancement/VQE-User-Video-API/internal/routes"
 	"github.com/Video-Quality-Enhancement/VQE-User-Video-API/internal/services"
@@ -18,7 +19,8 @@ import (
 func SetUpUserVideo(router *gin.RouterGroup, collection *mongo.Collection, ch *amqp.Channel) {
 
 	repository := repositories.NewVideoEnhanceRepository(collection)
-	service := services.NewVideoEnhanceService(repository, ch)
+	producer := producers.NewVideoEnhanceProducer(ch)
+	service := services.NewVideoEnhanceService(repository, producer)
 	controller := controllers.NewVideoEnhanceController(service)
 	validations.RegisterVideoValidations()
 	routes.RegisterUserVideoRoutes(router, controller)

@@ -4,7 +4,6 @@ import (
 	"github.com/Video-Quality-Enhancement/VQE-User-Video-API/internal/models"
 	"github.com/Video-Quality-Enhancement/VQE-User-Video-API/internal/producers"
 	"github.com/Video-Quality-Enhancement/VQE-User-Video-API/internal/repositories"
-	amqp "github.com/rabbitmq/amqp091-go"
 	"golang.org/x/exp/slog"
 )
 
@@ -20,11 +19,11 @@ type videoEnhanceService struct {
 	videoEnhanceProducer producers.VideoEnhanceProducer
 }
 
-func NewVideoEnhanceService(repository repositories.VideoEnhanceRepository, ch *amqp.Channel) VideoEnhanceService {
+func NewVideoEnhanceService(repository repositories.VideoEnhanceRepository, producer producers.VideoEnhanceProducer) VideoEnhanceService {
 
 	return &videoEnhanceService{
 		repository:           repository,
-		videoEnhanceProducer: producers.NewVideoEnhanceProducer(ch),
+		videoEnhanceProducer: producer,
 	}
 
 }
