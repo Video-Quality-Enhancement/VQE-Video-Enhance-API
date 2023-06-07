@@ -1,3 +1,4 @@
 .env
 logs/video*
 logs/VQE*
+service.account.key.json

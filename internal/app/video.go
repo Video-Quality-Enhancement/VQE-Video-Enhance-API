@@ -1,7 +1,9 @@
 package app
 
 import (
+	"github.com/Video-Quality-Enhancement/VQE-User-Video-API/internal/config"
 	"github.com/Video-Quality-Enhancement/VQE-User-Video-API/internal/controllers"
+	"github.com/Video-Quality-Enhancement/VQE-User-Video-API/internal/middlewares"
 	"github.com/Video-Quality-Enhancement/VQE-User-Video-API/internal/producers"
 	"github.com/Video-Quality-Enhancement/VQE-User-Video-API/internal/repositories"
 	"github.com/Video-Quality-Enhancement/VQE-User-Video-API/internal/routes"
@@ -16,14 +18,15 @@ import (
 // set up admin - admin is getting his own repository
 // set up developer - developer should not be able to access any kind of video
 
-func SetUpUserVideo(router *gin.RouterGroup, collection *mongo.Collection, ch *amqp.Channel) {
+func SetUpUserVideo(router *gin.RouterGroup, collection *mongo.Collection, ch *amqp.Channel, firebaseClient config.FirebaseClient) {
 
 	repository := repositories.NewVideoEnhanceRepository(collection)
 	producer := producers.NewVideoEnhanceProducer(ch)
 	service := services.NewVideoEnhanceService(repository, producer)
 	controller := controllers.NewVideoEnhanceController(service)
 	validations.RegisterVideoValidations()
-	routes.RegisterUserVideoRoutes(router, controller)
+	authorization := middlewares.Authorization(firebaseClient)
+	routes.RegisterUserVideoRoutes(router, authorization, controller)
 
 }
 

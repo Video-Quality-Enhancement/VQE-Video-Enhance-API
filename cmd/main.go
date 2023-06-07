@@ -18,6 +18,10 @@ func main() {
 	logFile := config.SetupSlogOutputFile()
 	defer logFile.Close()
 
+	router := gin.New()
+	router.Use(middlewares.JSONlogger())
+	router.Use(gin.Recovery())
+
 	client := config.NewMongoClient()
 	database := client.ConnectToDB()
 	defer client.Disconnect()
@@ -27,11 +31,9 @@ func main() {
 	conn := config.NewAMQPconnection()
 	defer conn.DisconnectAll()
 
-	router := gin.New()
-	router.Use(middlewares.JSONlogger())
-	router.Use(gin.Recovery())
+	firebaseClient := config.NewFirebaseClient()
 
-	app.SetUpApp(router, database, conn)
+	app.SetUpApp(router, database, conn, firebaseClient)
 
 	router.Run()
 
