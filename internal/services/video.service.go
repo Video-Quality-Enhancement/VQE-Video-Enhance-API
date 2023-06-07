@@ -1,9 +1,11 @@
 package services
 
 import (
+	"github.com/Video-Quality-Enhancement/VQE-User-Video-API/internal/constants"
 	"github.com/Video-Quality-Enhancement/VQE-User-Video-API/internal/models"
 	"github.com/Video-Quality-Enhancement/VQE-User-Video-API/internal/producers"
 	"github.com/Video-Quality-Enhancement/VQE-User-Video-API/internal/repositories"
+	"github.com/Video-Quality-Enhancement/VQE-User-Video-API/internal/utils"
 	"golang.org/x/exp/slog"
 )
 
@@ -30,16 +32,27 @@ func NewVideoEnhanceService(repository repositories.VideoEnhanceRepository, prod
 
 func (service *videoEnhanceService) EnhanceVideo(video *models.VideoEnhance) error {
 
-	err := service.repository.Create(video)
+	videoQuality, err := utils.IdentifyQuality(video.VideoUrl)
+	if err != nil {
+		slog.Error("Error identifying the quality of the video", "video", video)
+		return err
+	}
+
+	video.VideoQuality = videoQuality
+	video.Status = constants.VideoStatusPending.String()
+	video.StatusMessage = "Video is added to the queue to be enhanced"
+
+	err = service.repository.Create(video)
 	if err != nil {
 		slog.Error("Error adding video to repository", "video", video)
 		return err
 	}
 
 	request := &models.VideoEnhanceRequest{
-		UserId:    video.UserId,
-		RequestId: video.RequestId,
-		VideoUrl:  video.VideoUrl,
+		UserId:       video.UserId,
+		RequestId:    video.RequestId,
+		VideoUrl:     video.VideoUrl,
+		VideoQuality: video.VideoQuality,
 	}
 	err = service.videoEnhanceProducer.Publish(request)
 	if err != nil {

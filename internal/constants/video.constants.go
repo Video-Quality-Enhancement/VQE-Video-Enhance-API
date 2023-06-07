@@ -3,8 +3,8 @@ package constants
 type ResponseInterface string
 
 const (
-	Email    ResponseInterface = "email"
 	UI       ResponseInterface = "ui"
+	Email    ResponseInterface = "email"
 	Whatsapp ResponseInterface = "whatsapp"
 	Discord  ResponseInterface = "discord"
 )
@@ -51,4 +51,20 @@ func GetVideoQualitySet() map[VideoQuality]struct{} {
 		videoQualitySet[videoQuality] = struct{}{}
 	}
 	return videoQualitySet
+}
+
+type VideoStatus string
+
+const (
+	VideoStatusPending   VideoStatus = "pending"
+	VideoStatusCompleted VideoStatus = "completed"
+	VideoStatusFailed    VideoStatus = "failed"
+)
+
+func (v VideoStatus) String() string {
+	return string(v)
+}
+
+func GetVideoStatuses() [3]VideoStatus {
+	return [...]VideoStatus{VideoStatusPending, VideoStatusCompleted, VideoStatusFailed}
 }

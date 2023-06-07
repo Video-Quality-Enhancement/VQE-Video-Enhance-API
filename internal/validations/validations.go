@@ -8,6 +8,5 @@ import (
 func RegisterVideoValidations() {
 	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
 		v.RegisterValidation("are-response-interfaces-valid", ValidateResponseInterfaces)
-		v.RegisterValidation("is-video-capturable", ValidateVideoCapturable)
 	}
 }

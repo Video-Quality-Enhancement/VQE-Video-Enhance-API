@@ -31,6 +31,8 @@ func IdentifyQuality(videoUrl string) (string, error) {
 		quality = constants.Q720p
 	}
 
+	slog.Debug("Identified video quality", "quality", quality.String())
+
 	return quality.String(), nil
 
 }
