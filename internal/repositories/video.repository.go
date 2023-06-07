@@ -37,6 +37,10 @@ func NewVideoEnhanceRepositorySetup(collection *mongo.Collection) VideoEnhanceRe
 
 func (repository *videoEnhanceRepository) Create(video *models.VideoEnhance) error {
 
+	now := time.Now().UTC()
+	video.CreatedAt = now
+	video.UpdatedAt = now
+
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
