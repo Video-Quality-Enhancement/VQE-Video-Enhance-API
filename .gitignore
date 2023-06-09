@@ -1,4 +1,5 @@
 .env
 logs/video*
 logs/VQE*
-service.account.key.json
+firebase.sa.key.json
+drive.sa.key.json

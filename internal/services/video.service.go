@@ -1,15 +1,19 @@
 package services
 
 import (
+	"mime/multipart"
+
 	"github.com/Video-Quality-Enhancement/VQE-User-Video-API/internal/constants"
 	"github.com/Video-Quality-Enhancement/VQE-User-Video-API/internal/models"
 	"github.com/Video-Quality-Enhancement/VQE-User-Video-API/internal/producers"
 	"github.com/Video-Quality-Enhancement/VQE-User-Video-API/internal/repositories"
+	"github.com/Video-Quality-Enhancement/VQE-User-Video-API/internal/services/gapi"
 	"github.com/Video-Quality-Enhancement/VQE-User-Video-API/internal/utils"
 	"golang.org/x/exp/slog"
 )
 
 type VideoEnhanceService interface {
+	UploadVideo(video *models.VideoEnhance, file multipart.File, fileExtension string) (string, error)
 	EnhanceVideo(video *models.VideoEnhance) error
 	GetVideoByRequestId(userId, requestId string) (*models.VideoEnhance, error)
 	GetVideosByUserId(userId string) ([]models.VideoEnhance, error)
@@ -19,6 +23,7 @@ type VideoEnhanceService interface {
 type videoEnhanceService struct {
 	repository           repositories.VideoEnhanceRepository
 	videoEnhanceProducer producers.VideoEnhanceProducer
+	driveService         gapi.DriveService
 }
 
 func NewVideoEnhanceService(repository repositories.VideoEnhanceRepository, producer producers.VideoEnhanceProducer) VideoEnhanceService {
@@ -26,7 +31,22 @@ func NewVideoEnhanceService(repository repositories.VideoEnhanceRepository, prod
 	return &videoEnhanceService{
 		repository:           repository,
 		videoEnhanceProducer: producer,
+		driveService:         gapi.NewDriveService(),
 	}
+
+}
+
+func (service *videoEnhanceService) UploadVideo(video *models.VideoEnhance, file multipart.File, fileExtension string) (string, error) {
+
+	fileName := video.RequestId + "." + fileExtension
+	fileId, err := service.driveService.UploadFile(file, fileName)
+	if err != nil {
+		slog.Error("Error uploading video to drive", "video", video)
+		return "", err
+	}
+	slog.Debug("Video uploaded to drive", "fileId", fileId, "requestId", video.RequestId, "userId", video.UserId)
+	videoUrl := "https://drive.google.com/uc?id=" + fileId
+	return videoUrl, nil
 
 }
 
@@ -61,7 +81,7 @@ func (service *videoEnhanceService) EnhanceVideo(video *models.VideoEnhance) err
 		return err
 	}
 
-	slog.Debug("Added Video to enhance", "requestId", video.RequestId)
+	slog.Debug("Added Video to enhance", "requestId", video.RequestId, "userId", video.UserId)
 	return nil
 
 }
@@ -74,7 +94,7 @@ func (service *videoEnhanceService) GetVideoByRequestId(userId, requestId string
 		return nil, err
 	}
 
-	slog.Debug("Got video with requestId", "requestId", requestId)
+	slog.Debug("Got video with requestId", "requestId", requestId, "userId", userId)
 	return video, nil
 
 }
@@ -102,7 +122,7 @@ func (service *videoEnhanceService) DeleteVideo(userId, requestId string) error 
 		return err
 	}
 
-	slog.Debug("Deleted video", "requestId", requestId)
+	slog.Debug("Deleted video", "requestId", requestId, "userId", userId)
 
 	return nil
 }

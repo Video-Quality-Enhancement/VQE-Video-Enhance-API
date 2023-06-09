@@ -19,7 +19,7 @@ type firebaseClient struct {
 
 func NewFirebaseClient() FirebaseClient {
 
-	opt := option.WithCredentialsFile(os.Getenv("SERVICE_ACCOUNT_KEY_PATH"))
+	opt := option.WithCredentialsFile(os.Getenv("FIREBASE_SA_KEY_PATH"))
 	app, err := firebase.NewApp(context.Background(), nil, opt)
 	if err != nil {
 		slog.Error("error initializing app: %v\n", err)
