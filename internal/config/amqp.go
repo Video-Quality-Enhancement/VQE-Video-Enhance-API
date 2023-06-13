@@ -8,13 +8,12 @@ import (
 )
 
 type AMQPconnection interface {
-	NewChannel() *amqp.Channel
+	NewChannel() (*amqp.Channel, error)
 	DisconnectAll()
 }
 
 type amqpConnection struct {
-	conn     *amqp.Connection
-	channels []*amqp.Channel
+	conn *amqp.Connection
 }
 
 func NewAMQPconnection() AMQPconnection {
@@ -25,32 +24,17 @@ func NewAMQPconnection() AMQPconnection {
 		panic(err)
 	}
 
-	return &amqpConnection{conn, []*amqp.Channel{}}
+	return &amqpConnection{conn}
 
 }
 
-func (a *amqpConnection) NewChannel() *amqp.Channel {
+func (a *amqpConnection) NewChannel() (*amqp.Channel, error) {
 
-	ch, err := a.conn.Channel()
-	if err != nil {
-		slog.Error("Failed to open a channel", "err", err)
-		panic(err)
-	}
-
-	a.channels = append(a.channels, ch)
-	return ch
+	return a.conn.Channel()
 
 }
 
 func (a *amqpConnection) DisconnectAll() {
-
-	for _, ch := range a.channels {
-		err := ch.Close()
-		if err != nil {
-			slog.Error("Failed to close a channel", "err", err)
-			// not panicing or returning an error
-		}
-	}
 
 	err := a.conn.Close()
 	if err != nil {

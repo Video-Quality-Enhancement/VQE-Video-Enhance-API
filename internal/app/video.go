@@ -10,7 +10,6 @@ import (
 	"github.com/Video-Quality-Enhancement/VQE-User-Video-API/internal/services"
 	"github.com/Video-Quality-Enhancement/VQE-User-Video-API/internal/validations"
 	"github.com/gin-gonic/gin"
-	amqp "github.com/rabbitmq/amqp091-go"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -18,10 +17,10 @@ import (
 // set up admin - admin is getting his own repository
 // set up developer - developer should not be able to access any kind of video
 
-func SetUpUserVideo(router *gin.RouterGroup, collection *mongo.Collection, ch *amqp.Channel, firebaseClient config.FirebaseClient) {
+func SetUpUserVideo(router *gin.RouterGroup, collection *mongo.Collection, conn config.AMQPconnection, firebaseClient config.FirebaseClient) {
 
 	repository := repositories.NewVideoEnhanceRepository(collection)
-	producer := producers.NewVideoEnhanceProducer(ch)
+	producer := producers.NewVideoEnhanceProducer(conn)
 	service := services.NewVideoEnhanceService(repository, producer)
 	controller := controllers.NewVideoEnhanceController(service)
 	validations.RegisterVideoValidations()

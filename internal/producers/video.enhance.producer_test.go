@@ -15,9 +15,7 @@ func TestVideoEnhanceProducer_Publish(t *testing.T) {
 	conn := config.NewAMQPconnection()
 	defer conn.DisconnectAll()
 
-	ch := conn.NewChannel()
-
-	producer := producers.NewVideoEnhanceProducer(ch)
+	producer := producers.NewVideoEnhanceProducer(conn)
 	err := producer.Publish(&models.VideoEnhanceRequest{
 		UserId:    "1234",
 		RequestId: "123",

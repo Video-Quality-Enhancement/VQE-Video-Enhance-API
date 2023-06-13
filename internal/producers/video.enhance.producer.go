@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"time"
 
+	"github.com/Video-Quality-Enhancement/VQE-User-Video-API/internal/config"
 	"github.com/Video-Quality-Enhancement/VQE-User-Video-API/internal/models"
 	amqp "github.com/rabbitmq/amqp091-go"
 	"golang.org/x/exp/slog"
@@ -15,16 +16,30 @@ type VideoEnhanceProducer interface {
 }
 
 type videoEnhanceProducer struct {
-	exchange string
-	ch       *amqp.Channel
+	exchange     string
+	exchangeType string
+	conn         config.AMQPconnection
 }
 
-func NewVideoEnhanceProducer(ch *amqp.Channel) VideoEnhanceProducer {
+func NewVideoEnhanceProducer(conn config.AMQPconnection) VideoEnhanceProducer {
 
 	exchange := "video.enhance"
-	err := ch.ExchangeDeclare(
-		exchange,
-		"direct",
+	exchangeType := "direct"
+	return &videoEnhanceProducer{exchange, exchangeType, conn}
+}
+
+func (producer *videoEnhanceProducer) Publish(request *models.VideoEnhanceRequest) error {
+
+	ch, err := producer.conn.NewChannel()
+	if err != nil {
+		slog.Error("Failed to open a channel", "err", err)
+		return err
+	}
+	defer ch.Close()
+
+	err = ch.ExchangeDeclare(
+		producer.exchange,
+		producer.exchangeType,
 		true,
 		false,
 		false,
@@ -33,13 +48,8 @@ func NewVideoEnhanceProducer(ch *amqp.Channel) VideoEnhanceProducer {
 	)
 	if err != nil {
 		slog.Error("Failed to declare an exchange", "err", err)
-		panic(err)
+		return err
 	}
-
-	return &videoEnhanceProducer{exchange, ch}
-}
-
-func (producer *videoEnhanceProducer) Publish(request *models.VideoEnhanceRequest) error {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -50,7 +60,7 @@ func (producer *videoEnhanceProducer) Publish(request *models.VideoEnhanceReques
 		return err
 	}
 
-	err = producer.ch.PublishWithContext(
+	err = ch.PublishWithContext(
 		ctx,
 		producer.exchange,
 		request.VideoQuality,
