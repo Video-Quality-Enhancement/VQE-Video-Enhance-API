@@ -3,8 +3,8 @@ package routes
 import (
 	"net/http"
 
-	"github.com/Video-Quality-Enhancement/VQE-User-Video-API/internal/controllers"
-	"github.com/Video-Quality-Enhancement/VQE-User-Video-API/internal/middlewares"
+	"github.com/Video-Quality-Enhancement/VQE-Video-API/internal/controllers"
+	"github.com/Video-Quality-Enhancement/VQE-Video-API/internal/middlewares"
 	"github.com/gin-gonic/gin"
 )
 

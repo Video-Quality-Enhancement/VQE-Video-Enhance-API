@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/Video-Quality-Enhancement/VQE-User-Video-API/internal/config"
-	"github.com/Video-Quality-Enhancement/VQE-User-Video-API/internal/models"
+	"github.com/Video-Quality-Enhancement/VQE-Video-API/internal/config"
+	"github.com/Video-Quality-Enhancement/VQE-Video-API/internal/models"
 	amqp "github.com/rabbitmq/amqp091-go"
 	"golang.org/x/exp/slog"
 )

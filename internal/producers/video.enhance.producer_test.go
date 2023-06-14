@@ -4,9 +4,9 @@ import (
 	"os"
 	"testing"
 
-	"github.com/Video-Quality-Enhancement/VQE-User-Video-API/internal/config"
-	"github.com/Video-Quality-Enhancement/VQE-User-Video-API/internal/models"
-	"github.com/Video-Quality-Enhancement/VQE-User-Video-API/internal/producers"
+	"github.com/Video-Quality-Enhancement/VQE-Video-API/internal/config"
+	"github.com/Video-Quality-Enhancement/VQE-Video-API/internal/models"
+	"github.com/Video-Quality-Enhancement/VQE-Video-API/internal/producers"
 )
 
 func TestVideoEnhanceProducer_Publish(t *testing.T) {

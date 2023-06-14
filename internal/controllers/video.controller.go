@@ -3,9 +3,9 @@ package controllers
 import (
 	"net/http"
 
-	"github.com/Video-Quality-Enhancement/VQE-User-Video-API/internal/models"
-	"github.com/Video-Quality-Enhancement/VQE-User-Video-API/internal/services"
-	"github.com/Video-Quality-Enhancement/VQE-User-Video-API/internal/utils"
+	"github.com/Video-Quality-Enhancement/VQE-Video-API/internal/models"
+	"github.com/Video-Quality-Enhancement/VQE-Video-API/internal/services"
+	"github.com/Video-Quality-Enhancement/VQE-Video-API/internal/utils"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/exp/slog"
 )

@@ -1,7 +1,7 @@
 package validations
 
 import (
-	"github.com/Video-Quality-Enhancement/VQE-User-Video-API/internal/constants"
+	"github.com/Video-Quality-Enhancement/VQE-Video-API/internal/constants"
 	validator "github.com/go-playground/validator/v10"
 	"gocv.io/x/gocv"
 	"golang.org/x/exp/slog"

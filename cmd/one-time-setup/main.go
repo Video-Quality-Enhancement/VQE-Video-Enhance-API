@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/Video-Quality-Enhancement/VQE-User-Video-API/internal/app"
-	"github.com/Video-Quality-Enhancement/VQE-User-Video-API/internal/config"
+	"github.com/Video-Quality-Enhancement/VQE-Video-API/internal/app"
+	"github.com/Video-Quality-Enhancement/VQE-Video-API/internal/config"
 )
 
 func init() {
