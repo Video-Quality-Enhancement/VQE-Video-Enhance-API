@@ -32,13 +32,13 @@ func (c *firebaseClient) VerifyIDToken(ctx context.Context, idToken string) (str
 
 	client, err := c.app.Auth(ctx)
 	if err != nil {
-		slog.Error("error getting Auth client", "err", err)
+		slog.Error("error getting Auth client", "error", err)
 		return "", err
 	}
 
 	token, err := client.VerifyIDToken(ctx, idToken)
 	if err != nil {
-		slog.Error("error verifying ID token", "err", err)
+		slog.Error("error verifying ID token", "error", err)
 		return "", err
 	}
 

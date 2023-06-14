@@ -23,7 +23,7 @@ func Authorization(firebaseClient config.FirebaseClient) gin.HandlerFunc {
 		uid, err := firebaseClient.VerifyIDToken(ctx, token)
 
 		if err != nil {
-			slog.Error("error verifying ID token", "err", err)
+			slog.Error("error verifying ID token", "error", err)
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 			return
 		}

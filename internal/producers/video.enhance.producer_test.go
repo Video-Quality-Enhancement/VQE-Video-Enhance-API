@@ -23,7 +23,7 @@ func TestVideoEnhanceProducer_Publish(t *testing.T) {
 	})
 
 	if err != nil {
-		t.Error("Failed to publish message", "err", err)
+		t.Error("Failed to publish message", "error", err)
 	}
 
 }

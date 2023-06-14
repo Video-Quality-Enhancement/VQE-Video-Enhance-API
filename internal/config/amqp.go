@@ -20,7 +20,7 @@ func NewAMQPconnection() AMQPconnection {
 
 	conn, err := amqp.Dial(os.Getenv("AMQP_URL"))
 	if err != nil {
-		slog.Error("Failed to connect to RabbitMQ", "err", err)
+		slog.Error("Failed to connect to RabbitMQ", "error", err)
 		panic(err)
 	}
 
@@ -38,7 +38,7 @@ func (a *amqpConnection) DisconnectAll() {
 
 	err := a.conn.Close()
 	if err != nil {
-		slog.Error("Failed to disconnet from RabbitMQ", "err", err)
+		slog.Error("Failed to disconnet from RabbitMQ", "error", err)
 		panic(err)
 	}
 

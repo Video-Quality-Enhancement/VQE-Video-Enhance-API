@@ -28,7 +28,7 @@ func NewDriveService() DriveService {
 	)
 
 	if err != nil {
-		slog.Error("Unable to create drive Client", "err", err)
+		slog.Error("Unable to create drive Client", "error", err)
 	}
 
 	return &driveService{service}
@@ -47,7 +47,7 @@ func (d *driveService) UploadFile(file multipart.File, fileName string) (string,
 		ProgressUpdater(func(now, size int64) { slog.Debug("Uploading "+fileName, "now", now, "size", size) }).
 		Do()
 	if err != nil {
-		slog.Error("Error uploading file to drive", "err", err)
+		slog.Error("Error uploading file to drive", "error", err)
 		return "", err
 	}
 	slog.Debug("Video Uploaded to drive", "file Id", res.Id)

@@ -13,7 +13,7 @@ func TestIdentifyQuality(t *testing.T) {
 	t.Log(quality)
 
 	if err != nil {
-		t.Error("Failed to identify quality", "err", err)
+		t.Error("Failed to identify quality", "error", err)
 	}
 
 }

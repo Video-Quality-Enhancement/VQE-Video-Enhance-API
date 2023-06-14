@@ -26,13 +26,13 @@ func NewMongoClient() MongoClient { // *  v.v.v.imp MongoClient and not *mongoCl
 
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(os.Getenv("MONGO_URI")))
 	if err != nil {
-		slog.Error("Failed to connect to MongoDB", "err", err)
+		slog.Error("Failed to connect to MongoDB", "error", err)
 		panic(err)
 	}
 
 	err = client.Ping(ctx, nil)
 	if err != nil {
-		slog.Error("Failed to ping MongoDB", "err", err)
+		slog.Error("Failed to ping MongoDB", "error", err)
 		panic(err)
 	}
 
@@ -54,7 +54,7 @@ func (m *mongoClient) Disconnect() {
 
 	err := m.client.Disconnect(ctx)
 	if err != nil {
-		slog.Error("Failed to disconnect from MongoDB", "err", err)
+		slog.Error("Failed to disconnect from MongoDB", "error", err)
 		panic(err)
 	}
 

@@ -32,7 +32,7 @@ func (producer *videoEnhanceProducer) Publish(request *models.VideoEnhanceReques
 
 	ch, err := producer.conn.NewChannel()
 	if err != nil {
-		slog.Error("Failed to open a channel", "err", err)
+		slog.Error("Failed to open a channel", "error", err)
 		return err
 	}
 	defer ch.Close()
@@ -47,7 +47,7 @@ func (producer *videoEnhanceProducer) Publish(request *models.VideoEnhanceReques
 		nil,
 	)
 	if err != nil {
-		slog.Error("Failed to declare an exchange", "err", err)
+		slog.Error("Failed to declare an exchange", "error", err)
 		return err
 	}
 
@@ -56,7 +56,7 @@ func (producer *videoEnhanceProducer) Publish(request *models.VideoEnhanceReques
 
 	body, err := json.Marshal(request)
 	if err != nil {
-		slog.Error("Failed to marshal video object", "err", err)
+		slog.Error("Failed to marshal video object", "error", err)
 		return err
 	}
 
@@ -72,7 +72,7 @@ func (producer *videoEnhanceProducer) Publish(request *models.VideoEnhanceReques
 		},
 	)
 	if err != nil {
-		slog.Error("Failed to publish a message", "err", err)
+		slog.Error("Failed to publish a message", "error", err)
 		return err
 	}
 

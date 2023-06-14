@@ -46,7 +46,7 @@ func (repository *videoEnhanceRepository) Create(video *models.VideoEnhance) err
 
 	inserted, err := repository.collection.InsertOne(ctx, video)
 	if err != nil {
-		slog.Error("Error inserting video", "err", err)
+		slog.Error("Error inserting video", "error", err)
 		return err
 	}
 
@@ -110,7 +110,7 @@ func (repository *videoEnhanceRepository) Delete(userId, requestId string) error
 	deleteResult, err := repository.collection.DeleteOne(ctx, filter)
 
 	if err != nil {
-		slog.Error("Error deleting video", "requestId", requestId, "err", err)
+		slog.Error("Error deleting video", "requestId", requestId, "error", err)
 		return err
 	}
 
