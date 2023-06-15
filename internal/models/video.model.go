@@ -5,7 +5,7 @@ import "time"
 type VideoEnhance struct {
 	UserId               string    `json:"userId" bson:"userId"`
 	RequestId            string    `json:"requestId" bson:"requestId"`
-	VideoUrl             string    `json:"videoUrl" bson:"videoUrl" binding:"required,url"`
+	VideoUrl             string    `json:"videoUrl" bson:"videoUrl"`
 	VideoQuality         string    `json:"videoQuality" bson:"videoQuality"`
 	Status               string    `json:"status" bson:"status"`
 	StatusMessage        string    `json:"statusMessage" bson:"statusMessage"`
@@ -18,6 +18,6 @@ type VideoEnhance struct {
 type VideoEnhanceRequest struct {
 	UserId       string `json:"userId" bson:"userId"`
 	RequestId    string `json:"requestId" bson:"requestId"`
-	VideoUrl     string `json:"videoUrl" bson:"videoUrl"`
+	VideoUrl     string `json:"videoUrl" bson:"videoUrl" binding:"required,url"`
 	VideoQuality string `json:"videoQuality" bson:"videoQuality"`
 }

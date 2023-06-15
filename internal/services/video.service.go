@@ -13,8 +13,8 @@ import (
 )
 
 type VideoEnhanceService interface {
-	UploadVideo(video *models.VideoEnhance, file multipart.File, fileExtension string) (string, error)
-	EnhanceVideo(video *models.VideoEnhance) error
+	UploadVideo(video *models.VideoEnhanceRequest, file multipart.File, fileExtension string) (string, error)
+	EnhanceVideo(video *models.VideoEnhanceRequest) error
 	GetVideoByRequestId(userId, requestId string) (*models.VideoEnhance, error)
 	GetVideosByUserId(userId string) ([]models.VideoEnhance, error)
 	DeleteVideo(userId, requestId string) error
@@ -36,31 +36,36 @@ func NewVideoEnhanceService(repository repositories.VideoEnhanceRepository, prod
 
 }
 
-func (service *videoEnhanceService) UploadVideo(video *models.VideoEnhance, file multipart.File, fileExtension string) (string, error) {
+func (service *videoEnhanceService) UploadVideo(request *models.VideoEnhanceRequest, file multipart.File, fileExtension string) (string, error) {
 
-	fileName := video.RequestId + "." + fileExtension
+	fileName := request.RequestId + "." + fileExtension
 	fileId, err := service.driveService.UploadFile(file, fileName)
 	if err != nil {
-		slog.Error("Error uploading video to drive", "video", video)
+		slog.Error("Error uploading video to drive", "request", request)
 		return "", err
 	}
-	slog.Debug("Video uploaded to drive", "fileId", fileId, "requestId", video.RequestId, "userId", video.UserId)
+	slog.Debug("Video uploaded to drive", "fileId", fileId, "requestId", request.RequestId, "userId", request.UserId)
 	videoUrl := "https://drive.google.com/uc?id=" + fileId
 	return videoUrl, nil
 
 }
 
-func (service *videoEnhanceService) EnhanceVideo(video *models.VideoEnhance) error {
+func (service *videoEnhanceService) EnhanceVideo(request *models.VideoEnhanceRequest) error {
 
-	videoQuality, err := utils.IdentifyQuality(video.VideoUrl)
+	videoQuality, err := utils.IdentifyQuality(request.VideoUrl)
 	if err != nil {
-		slog.Error("Error identifying the quality of the video", "video", video)
+		slog.Error("Error identifying the quality of the video", "request", request)
 		return err
 	}
 
-	video.VideoQuality = videoQuality
-	video.Status = constants.VideoStatusPending.String()
-	video.StatusMessage = "Video is added to the queue to be enhanced"
+	video := &models.VideoEnhance{
+		UserId:        request.UserId,
+		RequestId:     request.RequestId,
+		VideoUrl:      request.VideoUrl,
+		VideoQuality:  videoQuality,
+		Status:        constants.VideoStatusPending.String(),
+		StatusMessage: "Video is added to the queue to be enhanced",
+	}
 
 	err = service.repository.Create(video)
 	if err != nil {
@@ -68,12 +73,7 @@ func (service *videoEnhanceService) EnhanceVideo(video *models.VideoEnhance) err
 		return err
 	}
 
-	request := &models.VideoEnhanceRequest{
-		UserId:       video.UserId,
-		RequestId:    video.RequestId,
-		VideoUrl:     video.VideoUrl,
-		VideoQuality: video.VideoQuality,
-	}
+	request.VideoQuality = videoQuality
 	err = service.videoEnhanceProducer.Publish(request)
 	if err != nil {
 		slog.Error("Error publishing video to enhance", "requestId", video.RequestId)

@@ -36,7 +36,7 @@ func NewVideoEnhanceController(service services.VideoEnhanceService) VideoEnhanc
 
 func (controller *videoEnhanceController) UploadAndEnhanceVideo(c *gin.Context) {
 
-	var video models.VideoEnhance
+	var video models.VideoEnhanceRequest
 	var err error
 
 	video.UserId, err = utils.GetUserId(c)
@@ -51,7 +51,11 @@ func (controller *videoEnhanceController) UploadAndEnhanceVideo(c *gin.Context) 
 		return
 	}
 
-	file, _ := c.FormFile("video")
+	file, err := c.FormFile("video")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 	slog.Debug("Uploading file", "userId", video.UserId, "requestId", video.RequestId)
 
 	contentType := file.Header.Get("Content-Type")
@@ -62,7 +66,7 @@ func (controller *videoEnhanceController) UploadAndEnhanceVideo(c *gin.Context) 
 
 	f, err := file.Open()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -90,7 +94,7 @@ func (controller *videoEnhanceController) UploadAndEnhanceVideo(c *gin.Context) 
 
 func (controller *videoEnhanceController) EnhanceVideo(c *gin.Context) {
 
-	var video models.VideoEnhance
+	var video models.VideoEnhanceRequest
 
 	err := c.ShouldBindJSON(&video)
 	if err != nil {
