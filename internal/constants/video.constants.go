@@ -30,10 +30,9 @@ func GetVideoQualitySet() map[VideoQuality]struct{} {
 type VideoStatus string
 
 const (
-	VideoStatusPending    VideoStatus = "PENDING"
-	VideoStatusProcessing VideoStatus = "PROCESSING"
-	VideoStatusCompleted  VideoStatus = "COMPLETED"
-	VideoStatusFailed     VideoStatus = "FAILED"
+	VideoStatusPending VideoStatus = "PENDING"
+	VideoStatusSuccess VideoStatus = "SUCCESS"
+	VideoStatusFailed  VideoStatus = "FAILED"
 )
 
 func (v VideoStatus) String() string {
@@ -41,5 +40,5 @@ func (v VideoStatus) String() string {
 }
 
 func GetVideoStatuses() [3]VideoStatus {
-	return [...]VideoStatus{VideoStatusPending, VideoStatusCompleted, VideoStatusFailed}
+	return [...]VideoStatus{VideoStatusPending, VideoStatusSuccess, VideoStatusFailed}
 }
