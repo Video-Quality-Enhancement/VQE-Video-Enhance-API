@@ -1,31 +1,5 @@
 package constants
 
-type ResponseInterface string
-
-const (
-	UI       ResponseInterface = "ui"
-	Email    ResponseInterface = "email"
-	Whatsapp ResponseInterface = "whatsapp"
-	Discord  ResponseInterface = "discord"
-)
-
-func (r ResponseInterface) String() string {
-	return string(r)
-}
-
-func GetResponseInterfaces() [4]ResponseInterface {
-	return [...]ResponseInterface{Email, UI, Whatsapp, Discord}
-}
-
-func GetResponseInterfaceSet() map[ResponseInterface]struct{} {
-	responseInterfaces := GetResponseInterfaces()
-	responseInterfacesSet := make(map[ResponseInterface]struct{})
-	for _, responseInterface := range responseInterfaces {
-		responseInterfacesSet[responseInterface] = struct{}{}
-	}
-	return responseInterfacesSet
-}
-
 type VideoQuality string
 
 const (
