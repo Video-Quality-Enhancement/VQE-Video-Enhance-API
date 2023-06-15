@@ -17,7 +17,7 @@ import (
 // set up admin - admin is getting his own repository
 // set up developer - developer should not be able to access any kind of video
 
-func SetUpUserVideo(router *gin.RouterGroup, collection *mongo.Collection, conn config.AMQPconnection, firebaseClient config.FirebaseClient) {
+func SetUpVideo(router *gin.RouterGroup, collection *mongo.Collection, conn config.AMQPconnection, firebaseClient config.FirebaseClient) {
 
 	repository := repositories.NewVideoEnhanceRepository(collection)
 	producer := producers.NewVideoEnhanceProducer(conn)
@@ -25,11 +25,11 @@ func SetUpUserVideo(router *gin.RouterGroup, collection *mongo.Collection, conn 
 	controller := controllers.NewVideoEnhanceController(service)
 	validations.RegisterVideoValidations()
 	authorization := middlewares.Authorization(firebaseClient)
-	routes.RegisterUserVideoRoutes(router, authorization, controller)
+	routes.RegisterVideoRoutes(router, authorization, controller)
 
 }
 
-func SetUpUserVideoRepositoryIndexes(collection *mongo.Collection) {
+func SetUpVideoRepositoryIndexes(collection *mongo.Collection) {
 
 	repository := repositories.NewVideoEnhanceRepositorySetup(collection)
 	repository.MakeUserIdIndex()

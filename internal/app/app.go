@@ -11,14 +11,14 @@ import (
 func SetUpApp(router *gin.Engine, database *mongo.Database, conn config.AMQPconnection, firebaseClient config.FirebaseClient) {
 
 	collection := database.Collection(os.Getenv("VIDEO_COLLECTION"))
-	userVideoRouter := router.Group("/api/user/videos")
-	SetUpUserVideo(userVideoRouter, collection, conn, firebaseClient)
+	videoRouter := router.Group("/api/user/videos")
+	SetUpVideo(videoRouter, collection, conn, firebaseClient)
 
 }
 
 func SetUpRepositoryIndexes(database *mongo.Database) {
 
 	collection := database.Collection(os.Getenv("VIDEO_COLLECTION"))
-	SetUpUserVideoRepositoryIndexes(collection)
+	SetUpVideoRepositoryIndexes(collection)
 
 }

@@ -14,7 +14,7 @@ func testController(c *gin.Context) {
 	})
 }
 
-func RegisterUserVideoRoutes(router *gin.RouterGroup, authorization gin.HandlerFunc, controller controllers.VideoEnhanceController) {
+func RegisterVideoRoutes(router *gin.RouterGroup, authorization gin.HandlerFunc, controller controllers.VideoEnhanceController) {
 
 	router.Use(authorization)
 	router.GET("/test", testController)
