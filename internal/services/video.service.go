@@ -121,13 +121,13 @@ func (service *videoEnhanceService) GetAllVideoEnhance(userId string) ([]models.
 func (service *videoEnhanceService) DeleteVideoEnhance(userId, requestId string) error {
 
 	fileName := requestId + ".mp4"
-	err := service.uploadVideoStorageService.DeleteFile(fileName)
+	err := service.uploadVideoStorageService.DeleteFile("uploaded/" + fileName)
 	if err != nil {
 		slog.Error("Error deleting uploaded video", "requestId", requestId)
 		return err
 	}
 
-	err = service.enhancedVideoStorageService.DeleteFile(fileName)
+	err = service.enhancedVideoStorageService.DeleteFile("enhanced/" + fileName)
 	if err != nil {
 		slog.Error("Error deleting enhanced video", "requestId", requestId)
 		return err

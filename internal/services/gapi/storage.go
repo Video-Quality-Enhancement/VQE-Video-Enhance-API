@@ -6,7 +6,6 @@ import (
 	"io"
 	"mime/multipart"
 	"os"
-	"time"
 
 	"cloud.google.com/go/storage"
 	"golang.org/x/exp/slog"
@@ -47,6 +46,8 @@ func NewGoogleCloudStorage(bucketName string) GoogleCloudStorage {
 
 func (gcs *googleCloudStorage) UploadFile(file multipart.File, fileName, email string) (string, string, error) {
 
+	fileName = "uploaded/" + fileName // temp solution
+
 	object := gcs.bucket.Object(fileName)
 	object = object.If(storage.Conditions{DoesNotExist: true})
 
@@ -63,32 +64,32 @@ func (gcs *googleCloudStorage) UploadFile(file multipart.File, fileName, email s
 		return "", "", err
 	}
 
-	acl := object.ACL()
-	entity := storage.ACLEntity("user-" + email)
-	err := acl.Set(ctx, entity, storage.RoleReader)
-	if err != nil {
-		slog.Error("Error granting access to file", "fileName", fileName, "error", err)
-		return "", "", err
-	}
+	// acl := object.ACL()
+	// entity := storage.ACLEntity("user-" + email)
+	// err := acl.Set(ctx, entity, storage.RoleReader)
+	// if err != nil {
+	// 	slog.Error("Error granting access to file", "fileName", fileName, "error", err)
+	// 	return "", "", err
+	// }
 
-	slog.Debug("Granted access to file", "fileName", fileName)
+	// slog.Debug("Granted access to file", "fileName", fileName)
 
 	url := "https://storage.googleapis.com/" + gcs.bucketName + "/" + fileName
 
-	opts := &storage.SignedURLOptions{
-		Scheme:  storage.SigningSchemeV4,
-		Method:  "GET",
-		Expires: time.Now().Add(1 * time.Minute),
-	}
+	// opts := &storage.SignedURLOptions{
+	// 	Scheme:  storage.SigningSchemeV4,
+	// 	Method:  "GET",
+	// 	Expires: time.Now().Add(1 * time.Minute),
+	// }
 
-	signedUrl, err := gcs.bucket.SignedURL(fileName, opts)
-	if err != nil {
-		slog.Error("Error getting signed URL", "error", err)
-		return "", "", err
-	}
+	// signedUrl, err := gcs.bucket.SignedURL(fileName, opts)
+	// if err != nil {
+	// 	slog.Error("Error getting signed URL", "error", err)
+	// 	return "", "", err
+	// }
 
-	slog.Debug("Signed URL", "url", url)
-	return url, signedUrl, nil
+	// slog.Debug("Signed URL", "url", url)
+	return url, url, nil
 
 }
 
