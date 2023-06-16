@@ -105,13 +105,13 @@ func (controller *videoEnhanceController) EnhanceVideo(c *gin.Context) {
 		return
 	}
 
-	err = controller.service.EnhanceVideo(&request)
+	request.VideoQuality, err = utils.IdentifyQuality(request.VideoUrl)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	request.VideoQuality, err = utils.IdentifyQuality(request.VideoUrl)
+	err = controller.service.EnhanceVideo(&request)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
