@@ -3,6 +3,7 @@ package config
 import (
 	"context"
 	"os"
+	"time"
 
 	firebase "firebase.google.com/go/v4"
 	"golang.org/x/exp/slog"
@@ -10,7 +11,7 @@ import (
 )
 
 type FirebaseClient interface {
-	VerifyIDToken(ctx context.Context, idToken string) (string, error)
+	VerifyIDToken(idToken string) (string, error)
 }
 
 type firebaseClient struct {
@@ -28,7 +29,10 @@ func NewFirebaseClient() FirebaseClient {
 	return &firebaseClient{app}
 }
 
-func (c *firebaseClient) VerifyIDToken(ctx context.Context, idToken string) (string, error) {
+func (c *firebaseClient) VerifyIDToken(idToken string) (string, error) {
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
 
 	client, err := c.app.Auth(ctx)
 	if err != nil {
