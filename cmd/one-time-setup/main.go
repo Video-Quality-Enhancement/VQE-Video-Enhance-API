@@ -15,6 +15,6 @@ func main() {
 	database := client.ConnectToDB()
 	defer client.Disconnect()
 
-	app.SetUpRepositoryIndexes(database)
+	app.OneTimeSetUpApp(database)
 
 }

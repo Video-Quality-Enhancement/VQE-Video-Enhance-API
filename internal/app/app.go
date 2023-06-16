@@ -16,9 +16,11 @@ func SetUpApp(router *gin.Engine, database *mongo.Database, conn config.AMQPconn
 
 }
 
-func SetUpRepositoryIndexes(database *mongo.Database) {
+func OneTimeSetUpApp(database *mongo.Database) {
 
-	collection := database.Collection(os.Getenv("VIDEO_ENHANCE_COLLECTION"))
-	SetUpVideoRepositoryIndexes(collection)
+	// collection := database.Collection(os.Getenv("VIDEO_ENHANCE_COLLECTION"))
+	// SetUpVideoRepositoryIndexes(collection)
+
+	SetUpStorageCORS()
 
 }

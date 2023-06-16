@@ -18,6 +18,10 @@ type GoogleCloudStorage interface {
 	DeleteFile(fileName string) error
 }
 
+type GoogleCloudStorageCORS interface {
+	SetUpCORS() error
+}
+
 type googleCloudStorage struct {
 	storageClient *storage.Client
 	bucket        *storage.BucketHandle
@@ -118,4 +122,43 @@ func (gcs *googleCloudStorage) DeleteFile(fileName string) error {
 
 	return nil
 
+}
+
+func NewGoogleCloudStorageCORS(bucketName string) GoogleCloudStorageCORS {
+	ctx := context.Background()
+
+	credsPath := os.Getenv("STORAGE_SA_KEY_PATH")
+
+	client, err := storage.NewClient(ctx, option.WithCredentialsFile(credsPath))
+	if err != nil {
+		slog.Error("Error creating storage client", "error", err)
+		panic(err)
+	}
+
+	bucket := client.Bucket(bucketName)
+
+	return &googleCloudStorage{client, bucket, bucketName}
+}
+
+func (gcs *googleCloudStorage) SetUpCORS() error {
+
+	ctx := context.Background()
+
+	cfg := storage.BucketAttrsToUpdate{
+		CORS: []storage.CORS{
+			{
+				MaxAge:          3600,
+				Methods:         []string{"GET"},
+				Origins:         []string{"*"},
+				ResponseHeaders: []string{"*"},
+			},
+		},
+	}
+
+	if _, err := gcs.bucket.Update(ctx, cfg); err != nil {
+		slog.Error("Error setting up CORS", "error", err)
+		return err
+	}
+
+	return nil
 }
