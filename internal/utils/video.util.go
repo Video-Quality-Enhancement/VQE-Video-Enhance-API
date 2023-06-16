@@ -17,15 +17,30 @@ func IdentifyQuality(videoUrl string) (string, error) {
 
 	var quality constants.VideoQuality
 	height := vc.Get(gocv.VideoCaptureFrameHeight)
+	width := vc.Get(gocv.VideoCaptureFrameWidth)
+	area := height * width
+
+	// switch {
+	// case height <= 144:
+	// 	quality = constants.Q144p
+	// case height <= 240:
+	// 	quality = constants.Q240p
+	// case height <= 360:
+	// 	quality = constants.Q360p
+	// case height <= 480:
+	// 	quality = constants.Q480p
+	// default:
+	// 	quality = constants.Q720p
+	// }
 
 	switch {
-	case height <= 144:
+	case area <= 256*144:
 		quality = constants.Q144p
-	case height <= 240:
+	case area <= 426*240:
 		quality = constants.Q240p
-	case height <= 360:
+	case area <= 640*360:
 		quality = constants.Q360p
-	case height <= 480:
+	case area <= 854*480:
 		quality = constants.Q480p
 	default:
 		quality = constants.Q720p
