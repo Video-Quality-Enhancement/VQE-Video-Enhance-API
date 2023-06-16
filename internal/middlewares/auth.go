@@ -10,7 +10,7 @@ import (
 	"golang.org/x/exp/slog"
 )
 
-func Authorization(firebaseClient config.FirebaseClient) gin.HandlerFunc {
+func Authorization(firebaseClient config.FirebaseAuth) gin.HandlerFunc {
 	return func(c *gin.Context) {
 
 		token := strings.Split(c.GetHeader("Authorization"), " ")[1]

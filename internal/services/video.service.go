@@ -2,18 +2,19 @@ package services
 
 import (
 	"mime/multipart"
+	"os"
 
+	"github.com/Video-Quality-Enhancement/VQE-Video-API/internal/config"
 	"github.com/Video-Quality-Enhancement/VQE-Video-API/internal/constants"
 	"github.com/Video-Quality-Enhancement/VQE-Video-API/internal/models"
 	"github.com/Video-Quality-Enhancement/VQE-Video-API/internal/producers"
 	"github.com/Video-Quality-Enhancement/VQE-Video-API/internal/repositories"
 	"github.com/Video-Quality-Enhancement/VQE-Video-API/internal/services/gapi"
-	"github.com/Video-Quality-Enhancement/VQE-Video-API/internal/utils"
 	"golang.org/x/exp/slog"
 )
 
 type VideoEnhanceService interface {
-	UploadVideo(video *models.VideoEnhanceRequest, file multipart.File, fileExtension string) (string, error)
+	UploadVideo(video *models.VideoEnhanceRequest, file multipart.File, fileExtension string) (string, string, error)
 	EnhanceVideo(video *models.VideoEnhanceRequest) error
 	GetVideoEnhance(userId, requestId string) (*models.VideoEnhance, error)
 	GetAllVideoEnhance(userId string) ([]models.VideoEnhance, error)
@@ -21,59 +22,64 @@ type VideoEnhanceService interface {
 }
 
 type videoEnhanceService struct {
-	repository           repositories.VideoEnhanceRepository
-	videoEnhanceProducer producers.VideoEnhanceProducer
-	driveService         gapi.DriveService
+	repository                  repositories.VideoEnhanceRepository
+	videoEnhanceProducer        producers.VideoEnhanceProducer
+	firebaseClient              config.FirebaseInfo
+	uploadVideoStorageService   gapi.GoogleCloudStorage
+	enhancedVideoStorageService gapi.GoogleCloudStorage
 }
 
-func NewVideoEnhanceService(repository repositories.VideoEnhanceRepository, producer producers.VideoEnhanceProducer) VideoEnhanceService {
+func NewVideoEnhanceService(repository repositories.VideoEnhanceRepository, firebaseClient config.FirebaseInfo, producer producers.VideoEnhanceProducer) VideoEnhanceService {
+
+	uploadVideoBucketName := os.Getenv("UPLOAD_VIDEO_BUCKET_NAME")
+	enhancedVideoBucketName := os.Getenv("ENHANCED_VIDEO_BUCKET_NAME")
 
 	return &videoEnhanceService{
-		repository:           repository,
-		videoEnhanceProducer: producer,
-		driveService:         gapi.NewDriveService(),
+		repository:                  repository,
+		videoEnhanceProducer:        producer,
+		firebaseClient:              firebaseClient,
+		uploadVideoStorageService:   gapi.NewGoogleCloudStorage(uploadVideoBucketName),
+		enhancedVideoStorageService: gapi.NewGoogleCloudStorage(enhancedVideoBucketName),
 	}
 
 }
 
-func (service *videoEnhanceService) UploadVideo(request *models.VideoEnhanceRequest, file multipart.File, fileExtension string) (string, error) {
+func (service *videoEnhanceService) UploadVideo(request *models.VideoEnhanceRequest, file multipart.File, fileExtension string) (string, string, error) {
 
 	fileName := request.RequestId + "." + fileExtension
-	fileId, err := service.driveService.UploadFile(file, fileName)
+	email, err := service.firebaseClient.GetEmail(request.UserId)
 	if err != nil {
-		slog.Error("Error uploading video to drive", "request", request)
-		return "", err
+		slog.Error("Error getting email from firebase", "request", request)
+		return "", "", err
 	}
-	slog.Debug("Video uploaded to drive", "fileId", fileId, "requestId", request.RequestId, "userId", request.UserId)
-	videoUrl := "https://drive.google.com/uc?id=" + fileId
-	return videoUrl, nil
+
+	videoUrl, signedUrl, err := service.uploadVideoStorageService.UploadFile(file, fileName, email)
+	if err != nil {
+		slog.Error("Error uploading file to google cloud storage", "request", request)
+		return "", "", err
+	}
+
+	return videoUrl, signedUrl, nil
 
 }
 
 func (service *videoEnhanceService) EnhanceVideo(request *models.VideoEnhanceRequest) error {
 
-	videoQuality, err := utils.IdentifyQuality(request.VideoUrl)
-	if err != nil {
-		slog.Error("Error identifying the quality of the video", "request", request)
-		return err
-	}
-
 	video := &models.VideoEnhance{
 		UserId:        request.UserId,
 		RequestId:     request.RequestId,
 		VideoUrl:      request.VideoUrl,
-		VideoQuality:  videoQuality,
+		VideoQuality:  request.VideoQuality,
 		Status:        constants.VideoStatusPending.String(),
 		StatusMessage: "Video is added to the queue to be enhanced",
 	}
 
-	err = service.repository.Create(video)
+	err := service.repository.Create(video)
 	if err != nil {
 		slog.Error("Error adding video to repository", "video", video)
 		return err
 	}
 
-	request.VideoQuality = videoQuality
 	err = service.videoEnhanceProducer.Publish(request)
 	if err != nil {
 		slog.Error("Error publishing video to enhance", "requestId", video.RequestId)
@@ -114,9 +120,20 @@ func (service *videoEnhanceService) GetAllVideoEnhance(userId string) ([]models.
 
 func (service *videoEnhanceService) DeleteVideoEnhance(userId, requestId string) error {
 
-	// TODO: call delete video producer
+	fileName := requestId + ".mp4"
+	err := service.uploadVideoStorageService.DeleteFile(fileName)
+	if err != nil {
+		slog.Error("Error deleting uploaded video", "requestId", requestId)
+		return err
+	}
 
-	err := service.repository.Delete(userId, requestId)
+	err = service.enhancedVideoStorageService.DeleteFile(fileName)
+	if err != nil {
+		slog.Error("Error deleting enhanced video", "requestId", requestId)
+		return err
+	}
+
+	err = service.repository.Delete(userId, requestId)
 	if err != nil {
 		slog.Error("Error deleting video", "requestId", requestId)
 		return err

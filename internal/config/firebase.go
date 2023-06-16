@@ -11,7 +11,16 @@ import (
 )
 
 type FirebaseClient interface {
+	FirebaseAuth
+	FirebaseInfo
+}
+
+type FirebaseAuth interface {
 	VerifyIDToken(idToken string) (string, error)
+}
+
+type FirebaseInfo interface {
+	GetEmail(uid string) (string, error)
 }
 
 type firebaseClient struct {
@@ -47,5 +56,26 @@ func (c *firebaseClient) VerifyIDToken(idToken string) (string, error) {
 	}
 
 	return token.UID, nil
+
+}
+
+func (c *firebaseClient) GetEmail(uid string) (string, error) {
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	client, err := c.app.Auth(ctx)
+	if err != nil {
+		slog.Error("error getting Auth client", "error", err)
+		return "", err
+	}
+
+	user, err := client.GetUser(ctx, uid)
+	if err != nil {
+		slog.Error("error getting user from firebase client", "error", err)
+		return "", err
+	}
+
+	return user.Email, nil
 
 }

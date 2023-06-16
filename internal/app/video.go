@@ -21,7 +21,7 @@ func SetUpVideo(router *gin.RouterGroup, collection *mongo.Collection, conn conf
 
 	repository := repositories.NewVideoEnhanceRepository(collection)
 	producer := producers.NewVideoEnhanceProducer(conn)
-	service := services.NewVideoEnhanceService(repository, producer)
+	service := services.NewVideoEnhanceService(repository, firebaseClient, producer)
 	controller := controllers.NewVideoEnhanceController(service)
 	validations.RegisterVideoValidations()
 	authorization := middlewares.Authorization(firebaseClient)
