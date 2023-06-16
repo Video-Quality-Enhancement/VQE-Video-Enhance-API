@@ -15,9 +15,9 @@ import (
 type VideoEnhanceService interface {
 	UploadVideo(video *models.VideoEnhanceRequest, file multipart.File, fileExtension string) (string, error)
 	EnhanceVideo(video *models.VideoEnhanceRequest) error
-	GetVideoByRequestId(userId, requestId string) (*models.VideoEnhance, error)
-	GetVideosByUserId(userId string) ([]models.VideoEnhance, error)
-	DeleteVideo(userId, requestId string) error
+	GetVideoEnhance(userId, requestId string) (*models.VideoEnhance, error)
+	GetAllVideoEnhance(userId string) ([]models.VideoEnhance, error)
+	DeleteVideoEnhance(userId, requestId string) error
 }
 
 type videoEnhanceService struct {
@@ -86,7 +86,7 @@ func (service *videoEnhanceService) EnhanceVideo(request *models.VideoEnhanceReq
 
 }
 
-func (service *videoEnhanceService) GetVideoByRequestId(userId, requestId string) (*models.VideoEnhance, error) {
+func (service *videoEnhanceService) GetVideoEnhance(userId, requestId string) (*models.VideoEnhance, error) {
 
 	video, err := service.repository.FindByRequestId(userId, requestId)
 	if err != nil {
@@ -99,7 +99,7 @@ func (service *videoEnhanceService) GetVideoByRequestId(userId, requestId string
 
 }
 
-func (service *videoEnhanceService) GetVideosByUserId(userId string) ([]models.VideoEnhance, error) {
+func (service *videoEnhanceService) GetAllVideoEnhance(userId string) ([]models.VideoEnhance, error) {
 
 	videos, err := service.repository.FindAllByUserId(userId)
 	if err != nil {
@@ -112,7 +112,7 @@ func (service *videoEnhanceService) GetVideosByUserId(userId string) ([]models.V
 
 }
 
-func (service *videoEnhanceService) DeleteVideo(userId, requestId string) error {
+func (service *videoEnhanceService) DeleteVideoEnhance(userId, requestId string) error {
 
 	// TODO: call delete video producer
 

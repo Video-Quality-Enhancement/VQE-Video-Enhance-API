@@ -13,15 +13,15 @@ import (
 type VideoEnhanceController interface {
 	UploadAndEnhanceVideo(c *gin.Context)
 	EnhanceVideo(c *gin.Context)
-	GetVideo(*gin.Context)
-	GetVideos(*gin.Context)
-	DeleteVideo(*gin.Context)
+	GetVideoEnhance(*gin.Context)
+	GetAllVideoEnhance(*gin.Context)
+	DeleteVideoEnhance(*gin.Context)
 }
 
 // type AdminVideoEnhanceController interface {
-// 	GetVideoByRequestId(c *gin.Context)
-// 	GetVideosByUserId(c *gin.Context)
-// 	DeleteVideo(c *gin.Context)
+// 	GetVideoEnhance(c *gin.Context)
+// 	GetAllVideoEnhance(c *gin.Context)
+// 	DeleteVideoEnhance(c *gin.Context)
 // 	// add video without quota to user
 // 	// send notification to user again
 // }
@@ -124,7 +124,7 @@ func (controller *videoEnhanceController) EnhanceVideo(c *gin.Context) {
 
 }
 
-func (controller *videoEnhanceController) GetVideo(c *gin.Context) {
+func (controller *videoEnhanceController) GetVideoEnhance(c *gin.Context) {
 
 	userId, err := utils.GetUserId(c)
 	if err != nil {
@@ -138,7 +138,7 @@ func (controller *videoEnhanceController) GetVideo(c *gin.Context) {
 		return
 	}
 
-	video, err := controller.service.GetVideoByRequestId(userId, requestId)
+	video, err := controller.service.GetVideoEnhance(userId, requestId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -148,7 +148,7 @@ func (controller *videoEnhanceController) GetVideo(c *gin.Context) {
 
 }
 
-func (controller *videoEnhanceController) GetVideos(c *gin.Context) {
+func (controller *videoEnhanceController) GetAllVideoEnhance(c *gin.Context) {
 
 	userId, err := utils.GetUserId(c)
 	if err != nil {
@@ -156,7 +156,7 @@ func (controller *videoEnhanceController) GetVideos(c *gin.Context) {
 		return
 	}
 
-	videos, err := controller.service.GetVideosByUserId(userId)
+	videos, err := controller.service.GetAllVideoEnhance(userId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -166,7 +166,7 @@ func (controller *videoEnhanceController) GetVideos(c *gin.Context) {
 
 }
 
-func (controller *videoEnhanceController) DeleteVideo(c *gin.Context) {
+func (controller *videoEnhanceController) DeleteVideoEnhance(c *gin.Context) {
 
 	userId, err := utils.GetUserId(c)
 	if err != nil {
@@ -180,7 +180,7 @@ func (controller *videoEnhanceController) DeleteVideo(c *gin.Context) {
 		return
 	}
 
-	err = controller.service.DeleteVideo(userId, requestId)
+	err = controller.service.DeleteVideoEnhance(userId, requestId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
