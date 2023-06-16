@@ -4,12 +4,12 @@ import (
 	"mime/multipart"
 	"os"
 
-	"github.com/Video-Quality-Enhancement/VQE-Video-API/internal/config"
-	"github.com/Video-Quality-Enhancement/VQE-Video-API/internal/constants"
-	"github.com/Video-Quality-Enhancement/VQE-Video-API/internal/models"
-	"github.com/Video-Quality-Enhancement/VQE-Video-API/internal/producers"
-	"github.com/Video-Quality-Enhancement/VQE-Video-API/internal/repositories"
-	"github.com/Video-Quality-Enhancement/VQE-Video-API/internal/services/gapi"
+	"github.com/Video-Quality-Enhancement/VQE-Video-Enhance-API/internal/config"
+	"github.com/Video-Quality-Enhancement/VQE-Video-Enhance-API/internal/constants"
+	"github.com/Video-Quality-Enhancement/VQE-Video-Enhance-API/internal/models"
+	"github.com/Video-Quality-Enhancement/VQE-Video-Enhance-API/internal/producers"
+	"github.com/Video-Quality-Enhancement/VQE-Video-Enhance-API/internal/repositories"
+	"github.com/Video-Quality-Enhancement/VQE-Video-Enhance-API/internal/services/gapi"
 	"golang.org/x/exp/slog"
 )
 

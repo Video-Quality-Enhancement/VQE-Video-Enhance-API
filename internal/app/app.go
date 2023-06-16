@@ -3,7 +3,7 @@ package app
 import (
 	"os"
 
-	"github.com/Video-Quality-Enhancement/VQE-Video-API/internal/config"
+	"github.com/Video-Quality-Enhancement/VQE-Video-Enhance-API/internal/config"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/mongo"
 )

@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/Video-Quality-Enhancement/VQE-Video-API/internal/app"
-	"github.com/Video-Quality-Enhancement/VQE-Video-API/internal/config"
-	"github.com/Video-Quality-Enhancement/VQE-Video-API/internal/middlewares"
+	"github.com/Video-Quality-Enhancement/VQE-Video-Enhance-API/internal/app"
+	"github.com/Video-Quality-Enhancement/VQE-Video-Enhance-API/internal/config"
+	"github.com/Video-Quality-Enhancement/VQE-Video-Enhance-API/internal/middlewares"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )

@@ -3,7 +3,7 @@ package utils_test
 import (
 	"testing"
 
-	"github.com/Video-Quality-Enhancement/VQE-Video-API/internal/utils"
+	"github.com/Video-Quality-Enhancement/VQE-Video-Enhance-API/internal/utils"
 )
 
 func TestIdentifyQuality(t *testing.T) {
