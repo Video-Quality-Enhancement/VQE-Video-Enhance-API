@@ -10,7 +10,6 @@ import (
 )
 
 type VideoEnhanceController interface {
-	UploadAndEnhanceVideo(c *gin.Context)
 	EnhanceVideo(c *gin.Context)
 	GetVideoEnhance(*gin.Context)
 	GetAllVideoEnhance(*gin.Context)
@@ -23,64 +22,6 @@ type videoEnhanceController struct {
 
 func NewVideoEnhanceController(service services.VideoEnhanceService) VideoEnhanceController {
 	return &videoEnhanceController{service}
-}
-
-func (controller *videoEnhanceController) UploadAndEnhanceVideo(c *gin.Context) {
-
-	var request models.VideoEnhanceRequest
-	var err error
-
-	request.UserId, err = utils.GetUserId(c)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	request.RequestId, err = utils.GetRequestID(c)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	file, err := c.FormFile("video")
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	contentType := file.Header.Get("Content-Type")
-	if contentType[:5] != "video" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid file type"})
-		return
-	}
-
-	f, err := file.Open()
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	var signedUrl string
-	request.VideoUrl, signedUrl, err = controller.service.UploadVideo(&request, f, contentType[6:])
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	request.VideoQuality, err = utils.IdentifyQuality(signedUrl)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	err = controller.service.EnhanceVideo(&request)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusCreated, request)
-
 }
 
 func (controller *videoEnhanceController) EnhanceVideo(c *gin.Context) {
@@ -99,25 +40,20 @@ func (controller *videoEnhanceController) EnhanceVideo(c *gin.Context) {
 		return
 	}
 
-	request.RequestId, err = utils.GetRequestID(c)
+	// make this correlation id
+	// request.RequestId, err = utils.GetRequestID(c)
+	// if err != nil {
+	// 	c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	// 	return
+	// }
+
+	videoEnhance, err := controller.service.EnhanceVideo(&request)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	request.VideoQuality, err = utils.IdentifyQuality(request.VideoUrl)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	err = controller.service.EnhanceVideo(&request)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusCreated, request)
+	c.JSON(http.StatusAccepted, videoEnhance)
 
 }
 

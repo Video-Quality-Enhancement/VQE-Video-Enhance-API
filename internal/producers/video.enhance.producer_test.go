@@ -19,7 +19,7 @@ func TestVideoEnhanceProducer_Publish(t *testing.T) {
 	err := producer.Publish(&models.VideoEnhanceRequest{
 		UserId:    "1234",
 		RequestId: "123",
-		VideoUrl:  "https://download.samplelib.com/mp4/sample-5s.mp4",
+		// VideoUrl:  "https://download.samplelib.com/mp4/sample-5s.mp4",
 	})
 
 	if err != nil {

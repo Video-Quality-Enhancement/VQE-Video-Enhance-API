@@ -18,7 +18,6 @@ func RegisterVideoRoutes(router *gin.RouterGroup, authorization gin.HandlerFunc,
 
 	router.Use(authorization)
 	router.GET("/test", testController)
-	router.POST("/upload", middlewares.SetRequestID(), controller.UploadAndEnhanceVideo)
 	router.POST("/", middlewares.SetRequestID(), controller.EnhanceVideo)
 	router.GET("/:id", controller.GetVideoEnhance)
 	router.GET("/", controller.GetAllVideoEnhance)

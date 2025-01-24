@@ -63,7 +63,7 @@ func (producer *videoEnhanceProducer) Publish(request *models.VideoEnhanceReques
 	err = ch.PublishWithContext(
 		ctx,
 		producer.exchange,
-		request.VideoQuality,
+		request.VideoResolution,
 		false,
 		false,
 		amqp.Publishing{

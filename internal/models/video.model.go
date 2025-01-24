@@ -2,22 +2,28 @@ package models
 
 import "time"
 
-type VideoEnhance struct {
+type Video struct {
 	UserId               string    `json:"userId" bson:"userId"`
-	RequestId            string    `json:"requestId" bson:"requestId"`
-	VideoUrl             string    `json:"videoUrl" bson:"videoUrl"`
-	VideoQuality         string    `json:"videoQuality" bson:"videoQuality"`
-	Status               string    `json:"status" bson:"status"`
-	StatusMessage        string    `json:"statusMessage" bson:"statusMessage"`
-	EnhancedVideoUrl     string    `json:"enhancedVideoUrl,omitempty" bson:"enhancedVideoUrl,omitempty"`
-	EnhancedVideoQuality string    `json:"enhancedVideoQuality,omitempty" bson:"enhancedVideoQuality,omitempty"`
+	VideoId              string    `json:"videoId" bson:"videoId"`
+	VideoResolution      string    `json:"videoResolution" bson:"videoResolution"`
+	VideoDurationSeconds int       `json:"videoDurationSeconds" bson:"videoDurationSeconds"`
 	CreatedAt            time.Time `json:"createdAt" bson:"createdAt"`
 	UpdatedAt            time.Time `json:"updatedAt" bson:"updatedAt"`
 }
 
+type VideoEnhance struct {
+	UserId          string    `json:"userId" bson:"userId"`
+	RequestId       string    `json:"requestId" bson:"requestId"`
+	VideoId         string    `json:"videoId" bson:"videoId"`
+	Status          string    `json:"status" bson:"status"`
+	EnhancedVideoId string    `json:"enhancedVideoId,omitempty" bson:"enhancedVideoId,omitempty"`
+	CreatedAt       time.Time `json:"createdAt" bson:"createdAt"`
+	UpdatedAt       time.Time `json:"updatedAt" bson:"updatedAt"`
+}
+
 type VideoEnhanceRequest struct {
-	UserId       string `json:"userId" bson:"userId"`
-	RequestId    string `json:"requestId" bson:"requestId"`
-	VideoUrl     string `json:"videoUrl" bson:"videoUrl" binding:"required,url"`
-	VideoQuality string `json:"videoQuality" bson:"videoQuality"`
+	UserId          string `json:"userId" bson:"userId"`
+	RequestId       string `json:"requestId" bson:"requestId"`
+	VideoId         string `json:"videoId" bson:"videoId"`
+	VideoResolution string `json:"videoResolution" bson:"videoResolution"`
 }
