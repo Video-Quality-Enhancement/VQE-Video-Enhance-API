@@ -3,12 +3,10 @@ package models
 import "time"
 
 type Video struct {
-	UserId               string    `json:"userId" bson:"userId"`
-	VideoId              string    `json:"videoId" bson:"videoId"`
-	VideoResolution      string    `json:"videoResolution" bson:"videoResolution"`
-	VideoDurationSeconds int       `json:"videoDurationSeconds" bson:"videoDurationSeconds"`
-	CreatedAt            time.Time `json:"createdAt" bson:"createdAt"`
-	UpdatedAt            time.Time `json:"updatedAt" bson:"updatedAt"`
+	UserId               string `json:"userId" bson:"userId"`
+	VideoId              string `json:"videoId" bson:"videoId"`
+	VideoResolution      string `json:"videoResolution" bson:"videoResolution"`
+	VideoDurationSeconds int    `json:"videoDurationSeconds" bson:"videoDurationSeconds"`
 }
 
 type VideoEnhance struct {

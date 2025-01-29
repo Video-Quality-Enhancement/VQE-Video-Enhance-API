@@ -41,8 +41,8 @@ func (store *videoStore) generateA2AToken(userId string) (string, error) {
 	claims["iat"] = time.Now().Unix()
 	claims["uid"] = userId
 	claims["sub"] = userId
-	claims["iss"] = "video-enhance-api"
-	claims["aud"] = "video-store-api"
+	// claims["iss"] = "video-enhance-api"
+	// claims["aud"] = "video-store-api"
 	claims["exp"] = time.Now().Add(time.Minute * 5).Unix()
 	claims["role"] = "a2a"
 
@@ -58,7 +58,7 @@ func (store *videoStore) generateA2AToken(userId string) (string, error) {
 
 func (store *videoStore) GetVideo(videoId string, userId string) (*models.Video, error) {
 
-	url := store.baseUrl + "/videos/" + videoId
+	url := store.baseUrl + "/api/videos/" + videoId
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -67,6 +67,7 @@ func (store *videoStore) GetVideo(videoId string, userId string) (*models.Video,
 	}
 
 	token, err := store.generateA2AToken(userId)
+	slog.Debug("Token", "token", token)
 	if err != nil {
 		slog.Error("Error generating a2a token", "userId", userId)
 		return nil, err
@@ -76,16 +77,17 @@ func (store *videoStore) GetVideo(videoId string, userId string) (*models.Video,
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
+	slog.Debug("Response", "resp", resp.Body)
 	if err != nil {
-		slog.Error("Error getting video", "url", url)
+		slog.Error("Error getting video", "url", url, "resp", resp.Body)
 		return nil, err
 	}
 
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		slog.Error("Error getting video", "url", url, "status", resp.StatusCode)
-		return nil, errors.New("Error getting video")
+		slog.Error("Error getting video", "url", url, "resp", resp.Body)
+		return nil, errors.New("error getting video")
 	}
 
 	video := &models.Video{}
@@ -100,7 +102,7 @@ func (store *videoStore) GetVideo(videoId string, userId string) (*models.Video,
 
 func (store *videoStore) DeleteVideo(videoId string, userId string) error {
 
-	url := store.baseUrl + "/videos/" + videoId
+	url := store.baseUrl + "/api/videos/" + videoId
 
 	req, err := http.NewRequest("DELETE", url, nil)
 	if err != nil {
@@ -127,7 +129,7 @@ func (store *videoStore) DeleteVideo(videoId string, userId string) error {
 
 	if resp.StatusCode != http.StatusOK {
 		slog.Error("Error deleting video", "url", url, "status", resp.StatusCode)
-		return errors.New("Error deleting video")
+		return errors.New("error deleting video")
 	}
 
 	return nil
